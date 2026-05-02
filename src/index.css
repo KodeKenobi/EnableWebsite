@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Times New Roman", Times, Georgia, serif;
+  --font-body:
+    "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body-light:
+    "Ubuntu Light", "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  --color-bg: #f7faf9;
+  --color-bg-soft: #f8fafa;
+  --color-bg-muted: #eef1f0;
+  --color-bg-subtle: #e0e0e0;
+  --color-fg: #132f38;
+  --color-fg-strong: #0a1211;
+  --color-fg-inverse: #f2f7f6;
+  --color-accent: #2c8286;
+  --color-accent-strong: #1b6d71;
+  --color-surface-deep: #1d464f;
+  --color-border: #e0e0e0;
+  --color-warm: #d07756;
+  --type-11: 11.2px;
+  --type-12: 12px;
+  --type-14: 14px;
+  --type-16: 16px;
+  --type-18: 18px;
+  --type-20: 20px;
+  --type-22: 22px;
+  --type-28: 28px;
+  --type-36: 36px;
+  --type-42: 42px;
+  --type-56: 56px;
+  --line-body: 1.5;
+  --line-tight: 1.15;
+  --line-display: 1.05;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+.type-nav {
+  font-family: var(--font-body-light);
+  font-size: var(--type-14);
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.type-button {
+  font-family: var(--font-body-light);
+  font-size: var(--type-12);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.type-kicker {
+  font-family: var(--font-body-light);
+  font-size: var(--type-12);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.type-intro-title {
+  font-family: times, sans-serif;
+  font-size: clamp(3.25rem, 6.5vw, 5.75rem);
+  font-weight: 400;
+  line-height: 1.12;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  text-align: left;
+}
+
+.type-intro-body {
+  font-family: var(--font-body-light);
+  font-size: clamp(var(--type-20), 2vw, var(--type-28));
+  font-weight: 400;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.type-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(var(--type-42), 10vw, calc(var(--type-56) * 2.6));
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+}
+
+.type-hero-body {
+  font-family: var(--font-body-light);
+  font-size: clamp(var(--type-18), 2vw, var(--type-28));
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+* {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+}
+
+/* Layout Foundations */
+.section-pad {
+  padding: 5rem 2rem;
+  @media (min-width: 1024px) {
+    padding: 8rem 4rem;
+  }
+}
+
+.grid-main {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2rem;
+}
+
+/* UI Elements */
+button {
+  background: var(--color-fg);
+  color: var(--color-fg-inverse);
+  padding: 1rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button.outline {
+  background: transparent;
+  color: var(--color-fg);
+  border: 1px solid var(--color-border);
+}
+
+/* Mask Reveal */
+.reveal-mask {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* Animated Underline */
+.hover-underline {
+  position: relative;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  background-size: 0% 100%;
+  transition: background-size 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-position 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-underline:hover::after {
+  background-position: 0% 100%;
+  background-size: 50% 100%;
+  transition: background-size 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-position 0s;
+}
