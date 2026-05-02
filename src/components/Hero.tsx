@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import heroBgUrl from "../assets/images/hero-geometric.png";
 
 interface HeroProps {
   introDone: boolean;
@@ -17,7 +18,7 @@ const bandParent = {
 const bandLeft = {
   hide: { opacity: 0, x: -40 },
   show: {
-    opacity: 1,
+    opacity: 0.85,
     x: 0,
     transition: { duration: 0.95, ease: [0.22, 1, 0.36, 1] },
   },
@@ -26,7 +27,7 @@ const bandLeft = {
 const bandRight = {
   hide: { opacity: 0, x: 48 },
   show: {
-    opacity: 1,
+    opacity: 0.85,
     x: 0,
     transition: { duration: 0.88, ease: [0.22, 1, 0.36, 1] },
   },
@@ -149,14 +150,9 @@ const Hero = ({ introDone }: HeroProps) => {
           },
         }}
         style={{
-          background: `linear-gradient(
-            168deg,
-            color-mix(in srgb, var(--color-accent) 42%, var(--color-surface-deep)) 0%,
-            var(--color-surface-deep) 22%,
-            color-mix(in srgb, var(--color-fg-strong) 55%, var(--color-surface-deep)) 48%,
-            color-mix(in srgb, var(--color-warm) 35%, var(--color-fg-strong)) 72%,
-            var(--color-fg-strong) 100%
-          )`,
+          backgroundImage: `url(${heroBgUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       />
       <motion.div
@@ -182,7 +178,7 @@ const Hero = ({ introDone }: HeroProps) => {
       >
         <motion.div
           variants={bandLeft}
-          className="absolute left-0 top-0 h-[38vh] w-full md:h-full md:w-[min(34vw,440px)]"
+          className="absolute left-0 top-0 h-full w-[92vw] md:w-[58vw] lg:w-[52vw] xl:w-[850px]"
           style={{
             background:
               "color-mix(in srgb, var(--color-surface-deep) 78%, var(--color-fg-strong) 22%)",
@@ -225,7 +221,7 @@ const Hero = ({ introDone }: HeroProps) => {
 
       <div className="relative z-10 mx-auto grid min-h-screen max-w-[1600px] grid-cols-12 gap-x-6 px-5 pb-16 pt-28 md:gap-x-8 md:px-10 lg:px-14 lg:pt-32">
         <motion.div
-          className="col-span-12 flex flex-col justify-end md:col-span-5 md:justify-center lg:col-span-5 lg:pr-4"
+          className="col-span-12 flex flex-col justify-end pt-8 md:col-span-6 md:justify-center md:pt-0 lg:col-span-6 lg:pr-4 max-w-[82vw] md:max-w-[50vw] xl:max-w-[750px]"
           initial={false}
           animate={phase}
           variants={copyParent}
@@ -247,26 +243,13 @@ const Hero = ({ introDone }: HeroProps) => {
               variants={copyItem}
               className="block text-[var(--color-fg-inverse)]"
             >
-              Digitali
-            </motion.span>
-            <motion.span
-              variants={copyItem}
-              className="mt-1 block text-[color-mix(in_srgb,var(--color-warm)_82%,var(--color-fg-inverse)_18%)]"
-            >
-              sation
+              Digitalisation
             </motion.span>
           </motion.h1>
-        </motion.div>
 
-        <motion.div
-          className="col-span-12 flex flex-col justify-end pt-8 md:col-span-7 md:justify-center md:pt-0 lg:col-span-6 lg:col-start-7"
-          initial={false}
-          animate={phase}
-          variants={copyParent}
-        >
           <motion.p
             variants={copyItem}
-            className="type-hero-body mb-8 max-w-xl text-[color-mix(in_srgb,var(--color-fg-inverse)_92%,transparent)] [text-shadow:0_2px_28px_color-mix(in_srgb,var(--color-fg-strong)_50%,transparent)] md:mb-10"
+            className="type-hero-body mt-8 mb-8 max-w-xl text-[color-mix(in_srgb,var(--color-fg-inverse)_92%,transparent)] [text-shadow:0_2px_28px_color-mix(in_srgb,var(--color-fg-strong)_50%,transparent)] md:mb-10 lg:mt-10"
           >
             Digitalisation is a social and business phenomenon, powered by the
             technologies ET brings to bear—woven processes, systems, customers,
@@ -278,20 +261,34 @@ const Hero = ({ introDone }: HeroProps) => {
           >
             <a
               href="#solutions"
-              className="type-button inline-flex items-center gap-2 border-b border-[color-mix(in_srgb,var(--color-fg-inverse)_45%,transparent)] pb-1 text-[var(--color-fg-inverse)] transition-opacity hover:opacity-75"
+              className="group type-button inline-flex items-center gap-2 border-b border-[color-mix(in_srgb,var(--color-fg-inverse)_45%,transparent)] pb-1 text-[var(--color-fg-inverse)]"
             >
-              Download presentation
+              <span className="relative block overflow-hidden">
+                <span className="block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
+                  Download presentation
+                </span>
+                <span className="absolute left-0 top-0 block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0" aria-hidden="true">
+                  Download presentation
+                </span>
+              </span>
               <ArrowRight
-                className="size-4 shrink-0"
+                className="size-4 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
                 strokeWidth={1.75}
                 aria-hidden
               />
             </a>
             <button
               type="button"
-              className="type-button self-start border border-[color-mix(in_srgb,var(--color-fg-inverse)_28%,transparent)] bg-[color-mix(in_srgb,var(--color-fg-inverse)_8%,transparent)] px-5 py-2.5 text-[var(--color-fg-inverse)] transition-opacity hover:opacity-80"
+              className="group type-button self-start inline-flex items-center justify-center rounded-full !bg-transparent px-6 py-2.5 text-[var(--color-fg-inverse)] transition-all duration-300 hover:!bg-[color-mix(in_srgb,var(--color-fg-inverse)_8%,transparent)]"
             >
-              Our products
+              <span className="relative block overflow-hidden">
+                <span className="block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
+                  Our products
+                </span>
+                <span className="absolute left-0 top-0 block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0" aria-hidden="true">
+                  Our products
+                </span>
+              </span>
             </button>
           </motion.div>
         </motion.div>

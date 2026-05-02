@@ -1,14 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans:
-    "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display: "Times New Roman", Times, Georgia, serif;
-  --font-body:
-    "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-body-light:
-    "Ubuntu Light", "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  --font-body: "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body-light: "Ubuntu Light", "Ubuntu", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  
   --color-bg: #f7faf9;
   --color-bg-soft: #f8fafa;
   --color-bg-muted: #eef1f0;
@@ -21,20 +18,6 @@
   --color-surface-deep: #1d464f;
   --color-border: #e0e0e0;
   --color-warm: #d07756;
-  --type-11: 11.2px;
-  --type-12: 12px;
-  --type-14: 14px;
-  --type-16: 16px;
-  --type-18: 18px;
-  --type-20: 20px;
-  --type-22: 22px;
-  --type-28: 28px;
-  --type-36: 36px;
-  --type-42: 42px;
-  --type-56: 56px;
-  --line-body: 1.5;
-  --line-tight: 1.15;
-  --line-display: 1.05;
 }
 
 :root {
@@ -51,9 +34,10 @@ body {
   overflow-x: hidden;
 }
 
+/* Typography Classes */
 .type-nav {
   font-family: var(--font-body-light);
-  font-size: var(--type-14);
+  font-size: 0.875rem; /* 14px */
   font-weight: 500;
   line-height: 1.55;
   letter-spacing: 0.12em;
@@ -62,7 +46,7 @@ body {
 
 .type-button {
   font-family: var(--font-body-light);
-  font-size: var(--type-12);
+  font-size: 0.75rem; /* 12px */
   font-weight: 500;
   line-height: 1.4;
   letter-spacing: 0.14em;
@@ -71,7 +55,7 @@ body {
 
 .type-kicker {
   font-family: var(--font-body-light);
-  font-size: var(--type-12);
+  font-size: 0.75rem; /* 12px */
   font-weight: 500;
   line-height: 1.5;
   letter-spacing: 0.18em;
@@ -79,7 +63,7 @@ body {
 }
 
 .type-intro-title {
-  font-family: times, sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(3.25rem, 6.5vw, 5.75rem);
   font-weight: 400;
   line-height: 1.12;
@@ -90,7 +74,7 @@ body {
 
 .type-intro-body {
   font-family: var(--font-body-light);
-  font-size: clamp(var(--type-20), 2vw, var(--type-28));
+  font-size: clamp(1.25rem, 2vw, 1.75rem); /* 20px to 28px */
   font-weight: 400;
   line-height: 1.6;
   margin: 0;
@@ -100,7 +84,7 @@ body {
 
 .type-hero-title {
   font-family: var(--font-display);
-  font-size: clamp(var(--type-42), 10vw, calc(var(--type-56) * 2.6));
+  font-size: clamp(2.5rem, 6vw, 5rem); /* 40px to 80px */
   font-weight: 400;
   line-height: 0.88;
   letter-spacing: -0.03em;
@@ -108,7 +92,7 @@ body {
 
 .type-hero-body {
   font-family: var(--font-body-light);
-  font-size: clamp(var(--type-18), 2vw, var(--type-28));
+  font-size: clamp(1.125rem, 2vw, 1.5rem); /* 18px to 24px */
   font-weight: 400;
   line-height: 1.45;
 }
@@ -124,10 +108,7 @@ body {
   scrollbar-width: none; /* Firefox */
 }
 
-h1,
-h2,
-h3,
-h4 {
+h1, h2, h3, h4 {
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 0.85;
@@ -147,27 +128,7 @@ h4 {
   gap: 2rem;
 }
 
-/* UI Elements */
-button {
-  background: var(--color-fg);
-  color: var(--color-fg-inverse);
-  padding: 1rem 2rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
-}
 
-button:hover {
-  transform: translateY(-2px);
-}
-
-button.outline {
-  background: transparent;
-  color: var(--color-fg);
-  border: 1px solid var(--color-border);
-}
 
 /* Mask Reveal */
 .reveal-mask {
