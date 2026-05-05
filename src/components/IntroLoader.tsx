@@ -323,18 +323,9 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
               ref={titleRef}
               className="type-intro-title invisible w-full opacity-0"
             >
-              <span className="whitespace-nowrap">Meet the Future.</span>
+              <span className="whitespace-nowrap">Meet the future</span>
               <br />
-              Today
-            </div>
-            <div ref={bodyRef} className="invisible mt-5 opacity-0">
-              <p
-                className="type-intro-body w-full"
-                style={{ color: "var(--color-fg-inverse)", opacity: 0.75 }}
-              >
-                The key to our success lies in the ability to deliver the right
-                solution
-              </p>
+              today
             </div>
           </div>
         </div>

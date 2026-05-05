@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import heroBgUrl from "../assets/images/hero-geometric.png";
+import heroBgUrl from "../assets/images/hero/hero-geometric.png";
 
 interface HeroProps {
   introDone: boolean;
@@ -11,37 +11,37 @@ const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='ht
 const bandParent = {
   hide: {},
   show: {
-    transition: { staggerChildren: 0.14, delayChildren: 0.04 },
+    transition: { staggerChildren: 0.2, delayChildren: 0.4 },
   },
 } as const;
 
 const bandLeft = {
-  hide: { opacity: 0, x: -40 },
+  hide: { opacity: 0, x: "-100%" },
   show: {
     opacity: 0.85,
     x: 0,
-    transition: { duration: 0.95, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
   },
 } as const;
 
 const bandRight = {
-  hide: { opacity: 0, x: 48 },
+  hide: { opacity: 0, x: "100%" },
   show: {
     opacity: 0.85,
     x: 0,
-    transition: { duration: 0.88, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
   },
 } as const;
 
 const dotsReveal = {
   hide: { opacity: 0, scale: 0.96 },
   show: {
-    opacity: 1,
+    opacity: 0.35,
     scale: 1,
     transition: {
       duration: 1.05,
       ease: [0.2, 0.9, 0.2, 1],
-      delay: 0.28,
+      delay: 1.0,
     },
   },
 } as const;
@@ -53,20 +53,27 @@ const copyParent = {
   hide: {},
   show: {
     transition: {
-      staggerChildren: 0.14,
-      delayChildren: 0.62,
+      staggerChildren: 0.2,
+      delayChildren: 1.2,
     },
   },
 } as const;
 
+const scrollParent = {
+  hide: {},
+  show: {
+    transition: { staggerChildren: 0.2, delayChildren: 2.2 },
+  },
+} as const;
+
 const copyItem = {
-  hide: { opacity: 0, y: 36 },
+  hide: { opacity: 0, y: "4vh" },
   show: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.78,
-      ease: [0.22, 1, 0.28, 1],
+      duration: 1.0,
+      ease: [0.16, 1, 0.3, 1],
     },
   },
 } as const;
@@ -130,31 +137,34 @@ function DotBurst({ className }: { className?: string }) {
 }
 
 const Hero = ({ introDone }: HeroProps) => {
-  const phase = introDone ? "show" : "hide";
+  // Keep hero layers visible regardless of intro state.
+  // Intro overlay is responsible for hiding/revealing the page.
+  const phase = "show";
 
   return (
     <section
       id="hero"
-      className="relative min-h-screen w-full overflow-hidden text-[var(--color-fg-inverse)]"
+      className="relative min-h-screen w-full overflow-hidden bg-[var(--color-fg-strong)] text-[var(--color-fg-inverse)]"
     >
-      {/* Full-bleed “stage” — gradient + grain (no external image). */}
+      {/* Full-bleed background image with built-in dark tint */}
       <motion.div
         className="absolute inset-0"
         initial={false}
         animate={phase}
         variants={{
-          hide: { opacity: 0.85 },
+          hide: { opacity: 0 },
           show: {
             opacity: 1,
-            transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+            transition: { duration: 1.5, ease: "easeOut" },
           },
         }}
         style={{
-          backgroundImage: `url(${heroBgUrl})`,
+          backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url(${heroBgUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       />
+
       <motion.div
         className="pointer-events-none absolute inset-0 mix-blend-overlay"
         initial={false}
@@ -178,7 +188,7 @@ const Hero = ({ introDone }: HeroProps) => {
       >
         <motion.div
           variants={bandLeft}
-          className="absolute left-0 top-0 h-full w-[92vw] md:w-[58vw] lg:w-[52vw] xl:w-[850px]"
+          className="absolute left-0 top-0 h-full w-[92vw] md:w-[58vw] lg:w-[52vw] xl:w-[850px] rounded-tr-[100px] lg:rounded-tr-[400px]"
           style={{
             background:
               "color-mix(in srgb, var(--color-surface-deep) 78%, var(--color-fg-strong) 22%)",
@@ -189,7 +199,7 @@ const Hero = ({ introDone }: HeroProps) => {
         <motion.div
           variants={bandRight}
           className="absolute right-0 top-0 hidden h-full w-[min(22vw,200px)] md:block lg:w-[min(20vw,240px)]"
-          style={{ background: "var(--color-warm)" }}
+          style={{ background: "var(--color-accent-strong)" }}
         />
       </motion.div>
 
@@ -219,21 +229,15 @@ const Hero = ({ introDone }: HeroProps) => {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto grid min-h-screen max-w-[1600px] grid-cols-12 gap-x-6 px-5 pb-16 pt-28 md:gap-x-8 md:px-10 lg:px-14 lg:pt-32">
+      <div className="relative z-10 grid min-h-screen w-full grid-cols-12 gap-x-6 px-6 pb-16 pt-28 md:gap-x-8 md:px-10 lg:px-16 lg:pt-32">
         <motion.div
           className="col-span-12 flex flex-col justify-end pt-8 md:col-span-6 md:justify-center md:pt-0 lg:col-span-6 lg:pr-4 max-w-[82vw] md:max-w-[50vw] xl:max-w-[750px]"
           initial={false}
           animate={phase}
           variants={copyParent}
         >
-          <motion.p
-            variants={copyItem}
-            className="type-kicker mb-5 text-[color-mix(in_srgb,var(--color-fg-inverse)_78%,var(--color-accent)_22%)] md:mb-7"
-          >
-            Connected Business
-          </motion.p>
           <motion.h1
-            className="type-hero-title mb-0 max-w-[14ch] leading-[0.9] drop-shadow-[0_4px_48px_color-mix(in_srgb,var(--color-fg-strong)_55%,transparent)]"
+            className="hero-title max-w-[14ch] leading-[0.9] drop-shadow-[0_4px_48px_color-mix(in_srgb,var(--color-fg-strong)_55%,transparent)]"
             style={{ fontFamily: "var(--font-display)" }}
             initial={false}
             animate={phase}
@@ -249,7 +253,7 @@ const Hero = ({ introDone }: HeroProps) => {
 
           <motion.p
             variants={copyItem}
-            className="type-hero-body mt-8 mb-8 max-w-xl text-[color-mix(in_srgb,var(--color-fg-inverse)_92%,transparent)] [text-shadow:0_2px_28px_color-mix(in_srgb,var(--color-fg-strong)_50%,transparent)] md:mb-10 lg:mt-10"
+            className="hero-body max-w-xl text-[color-mix(in_srgb,var(--color-fg-inverse)_92%,transparent)] [text-shadow:0_2px_28px_color-mix(in_srgb,var(--color-fg-strong)_50%,transparent)] md:mb-10 lg:mt-10"
           >
             Digitalisation is a social and business phenomenon, powered by the
             technologies ET brings to bear—woven processes, systems, customers,
@@ -263,16 +267,19 @@ const Hero = ({ introDone }: HeroProps) => {
               href="#solutions"
               className="group type-button inline-flex items-center gap-2 border-b border-[color-mix(in_srgb,var(--color-fg-inverse)_45%,transparent)] pb-1 text-[var(--color-fg-inverse)]"
             >
-              <span className="relative block overflow-hidden">
-                <span className="block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
+              <span className="relative inline-flex overflow-hidden whitespace-nowrap">
+                <span className="transform-gpu transition-transform duration-300 ease-out group-hover:translate-y-full">
                   Download presentation
                 </span>
-                <span className="absolute left-0 top-0 block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0" aria-hidden="true">
+                <span
+                  className="absolute inset-0 transform-gpu transition-transform duration-300 ease-out -translate-y-full group-hover:translate-y-0"
+                  aria-hidden="true"
+                >
                   Download presentation
                 </span>
               </span>
               <ArrowRight
-                className="size-4 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
+                className="size-4 shrink-0 transition-transform duration-300 ease-out group-hover:translate-x-1"
                 strokeWidth={1.75}
                 aria-hidden
               />
@@ -281,11 +288,14 @@ const Hero = ({ introDone }: HeroProps) => {
               type="button"
               className="group type-button self-start inline-flex items-center justify-center rounded-full !bg-transparent px-6 py-2.5 text-[var(--color-fg-inverse)] transition-all duration-300 hover:!bg-[color-mix(in_srgb,var(--color-fg-inverse)_8%,transparent)]"
             >
-              <span className="relative block overflow-hidden">
-                <span className="block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
+              <span className="relative inline-flex overflow-hidden whitespace-nowrap">
+                <span className="transform-gpu transition-transform duration-300 ease-out group-hover:translate-y-full">
                   Our products
                 </span>
-                <span className="absolute left-0 top-0 block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0" aria-hidden="true">
+                <span
+                  className="absolute inset-0 transform-gpu transition-transform duration-300 ease-out -translate-y-full group-hover:translate-y-0"
+                  aria-hidden="true"
+                >
                   Our products
                 </span>
               </span>
@@ -294,18 +304,33 @@ const Hero = ({ introDone }: HeroProps) => {
         </motion.div>
 
         <motion.div
-          className="col-span-12 mt-auto flex justify-start pb-2 md:absolute md:bottom-6 md:left-6 md:col-span-auto lg:bottom-10 lg:left-10"
+          className="col-span-12 mt-auto flex justify-start pb-2 md:absolute md:bottom-6 md:left-10 md:col-span-auto lg:bottom-10 lg:left-14"
           initial={false}
           animate={phase}
-          variants={copyParent}
+          variants={scrollParent}
         >
-          <motion.span
+          <motion.div
             variants={copyItem}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--color-fg-inverse)_24%,transparent)] text-[color-mix(in_srgb,var(--color-fg-inverse)_58%,transparent)]"
-            aria-hidden
+            className="flex flex-col items-center gap-2"
           >
-            <ChevronDown className="size-5" strokeWidth={1.5} />
-          </motion.span>
+            {/* Vertical Track */}
+            <div className="relative h-14 w-[1.5px] overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-fg-inverse)_15%,transparent)]">
+              {/* Dropping Beat */}
+              <div className="animate-beat-drop absolute left-0 top-0 h-1/2 w-full bg-[color-mix(in_srgb,var(--color-fg-inverse)_45%,transparent)]" />
+            </div>
+
+            {/* Pulsing Circle */}
+            <div
+              className="animate-heartbeat-circle flex h-11 w-11 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--color-fg-inverse)_24%,transparent)] text-[color-mix(in_srgb,var(--color-fg-inverse)_58%,transparent)]"
+              aria-hidden
+            >
+              {/* Pulsing Chevron */}
+              <ChevronDown
+                className="animate-heartbeat-chevron size-5"
+                strokeWidth={1.5}
+              />
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

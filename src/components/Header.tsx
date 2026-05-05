@@ -48,10 +48,10 @@ const Header = () => {
             }}
           >
             <span className="relative block overflow-hidden">
-              <span className="font-bold text-xl inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
+              <span className="font-semibold text-xl inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
                 {label}
               </span>
-              <span className="font-bold text-xl absolute left-0 top-0 inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0" aria-hidden="true">
+              <span className="text-[var(--color-primary-blue)] font-semibold text-xl absolute left-0 top-0 inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0" aria-hidden="true">
                 {label}
               </span>
             </span>
@@ -60,16 +60,18 @@ const Header = () => {
       </nav>
       <motion.a
         href="#contact"
-        className="group relative overflow-hidden type-button shrink-0 bg-[var(--color-fg-strong)] px-5 py-2.5 text-[var(--color-fg-inverse)] transition-opacity hover:opacity-90 md:px-7 md:py-3"
+        className="group type-button shrink-0 inline-flex items-center justify-center hover:bg-[var(--color-primary-blue)] bg-[var(--color-fg-strong)] px-5 py-2.5 text-[var(--color-fg-inverse)] transition-opacity hover:opacity-90 md:px-7 md:py-4 rounded-tr-full rounded-br-lg"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.55, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <span className="inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[150%]">
-          Inquiry
-        </span>
-        <span className="absolute inset-0 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[150%] group-hover:translate-y-0" aria-hidden="true">
-          Inquiry
+        <span className="relative inline-flex overflow-hidden whitespace-nowrap">
+          <span className="text-md transform-gpu transition-transform duration-300 ease-out group-hover:translate-y-full">
+            Inquiry
+          </span>
+          <span className="text-md absolute inset-0 transform-gpu transition-transform duration-300 ease-out -translate-y-full group-hover:translate-y-0" aria-hidden="true">
+            Inquiry
+          </span>
         </span>
       </motion.a>
     </motion.header>
