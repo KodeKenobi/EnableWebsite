@@ -1,47 +1,160 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import heroBgUrl from "../assets/images/hero/hero-geometric.png";
+import {
+  ParagraphSlideText,
+  paragraphSlideVariants,
+} from "./animations/textAnimations/ParagraphSlideText.tsx";
 
 interface HeroProps {
   introDone: boolean;
 }
 
+type HeroRevealPhase = "idle" | "loading" | "playing";
+
+/** Minimum loading beat after intro (or on refresh when intro is skipped). */
+const HERO_LOADING_MS = 720;
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const BG_DURATION = 1.95;
+
+/** Paragraph-slide duration per layer. */
+const TEXT_SLIDE_DURATION = 1.45;
+
+/** Offset between headline → paragraph → CTAs → scroll (seconds). */
+const COPY_STAGGER = 0.26;
+
+/** Base beat for hero copy once the backdrop has mostly settled (~matches `BG_DURATION`). */
+const HERO_COPY_BASE = 2.15;
+
+/** Delays in seconds from the start of the `playing` phase (after loading overlay ends). */
+const T = {
+  bg: 0,
+  noise: 0.2,
+  rightBand: 1,
+  leftBand: 1.42,
+  dots: 1.58,
+  gradient: 1.38,
+  heroTitle: HERO_COPY_BASE,
+  heroBody: HERO_COPY_BASE + COPY_STAGGER,
+  heroCtas: HERO_COPY_BASE + COPY_STAGGER * 2,
+  heroScroll: HERO_COPY_BASE + COPY_STAGGER * 3,
+} as const;
+
 const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
-const bandParent = {
-  hide: {},
+const bgVariants = {
+  hide: { opacity: 0 },
   show: {
-    transition: { staggerChildren: 0.2, delayChildren: 0.4 },
+    opacity: 1,
+    transition: {
+      duration: BG_DURATION,
+      ease: [0.33, 0, 0.2, 1] as const,
+      delay: T.bg,
+    },
   },
 } as const;
 
-const bandLeft = {
-  hide: { opacity: 0, x: "-100%" },
+const noiseVariants = {
+  hide: { opacity: 0 },
   show: {
-    opacity: 0.85,
-    x: 0,
-    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+    opacity: 0.14,
+    transition: { duration: 1.35, ease: "easeOut", delay: T.noise },
   },
 } as const;
 
-const bandRight = {
+const bandRightVariants = {
   hide: { opacity: 0, x: "100%" },
   show: {
     opacity: 0.85,
     x: 0,
-    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+    transition: { delay: T.rightBand, duration: 1.45, ease: EASE },
   },
 } as const;
 
-const dotsReveal = {
+const bandLeftVariants = {
+  hide: { opacity: 0, x: "-100%" },
+  show: {
+    opacity: 0.85,
+    x: 0,
+    transition: { delay: T.leftBand, duration: 1.45, ease: EASE },
+  },
+} as const;
+
+const dotsVariants = {
   hide: { opacity: 0, scale: 0.96 },
   show: {
     opacity: 0.35,
     scale: 1,
     transition: {
-      duration: 1.05,
-      ease: [0.2, 0.9, 0.2, 1],
-      delay: 1.0,
+      delay: T.dots,
+      duration: 1.35,
+      ease: [0.25, 0.85, 0.25, 1] as const,
+    },
+  },
+} as const;
+
+const bottomGradientVariants = {
+  hide: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { duration: 1.25, ease: "easeOut", delay: T.gradient },
+  },
+} as const;
+
+const paragraphEase = paragraphSlideVariants.show.transition.ease;
+
+/** Same slide motion per layer; `delay` staggers headline → body → actions → scroll. */
+const heroTitleSlideVariants = {
+  hide: { ...paragraphSlideVariants.hide },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: T.heroTitle,
+      duration: TEXT_SLIDE_DURATION,
+      ease: paragraphEase,
+    },
+  },
+} as const;
+
+const heroParagraphSlideVariants = {
+  hide: { ...paragraphSlideVariants.hide },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: T.heroBody,
+      duration: TEXT_SLIDE_DURATION,
+      ease: paragraphEase,
+    },
+  },
+} as const;
+
+const heroCtasSlideVariants = {
+  hide: { ...paragraphSlideVariants.hide },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: T.heroCtas,
+      duration: TEXT_SLIDE_DURATION,
+      ease: paragraphEase,
+    },
+  },
+} as const;
+
+const heroScrollVariants = {
+  hide: { opacity: 0, y: paragraphSlideVariants.hide.y },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: T.heroScroll,
+      duration: TEXT_SLIDE_DURATION,
+      ease: paragraphEase,
     },
   },
 } as const;
@@ -49,47 +162,6 @@ const dotsReveal = {
 /** Matches `Header` (`h-24`) so hero ornaments never enter the nav band. */
 const HEADER_OFFSET_CLASS = "top-24";
 
-const copyParent = {
-  hide: {},
-  show: {
-    transition: {
-      staggerChildren: 0.2,
-      delayChildren: 1.2,
-    },
-  },
-} as const;
-
-const scrollParent = {
-  hide: {},
-  show: {
-    transition: { staggerChildren: 0.2, delayChildren: 2.2 },
-  },
-} as const;
-
-const copyItem = {
-  hide: { opacity: 0, y: "4vh" },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 1.0,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-} as const;
-
-/** Stagger the two headline lines after the kicker (parent column handles kicker → headline slot). */
-const headlineParent = {
-  hide: {},
-  show: {
-    transition: { staggerChildren: 0.16 },
-  },
-} as const;
-
-/**
- * Right semicircle of the burst (center 100,100, r=88) so art only occupies the
- * eastern half — pairs with a column aligned to the orange band’s inner edge.
- */
 function DotBurst({ className }: { className?: string }) {
   const rings = [12, 24, 36, 48, 60, 72];
   return (
@@ -137,27 +209,47 @@ function DotBurst({ className }: { className?: string }) {
 }
 
 const Hero = ({ introDone }: HeroProps) => {
-  // Keep hero layers visible regardless of intro state.
-  // Intro overlay is responsible for hiding/revealing the page.
-  const phase = "show";
+  const [phase, setPhase] = useState<HeroRevealPhase>("idle");
+
+  useEffect(() => {
+    if (!introDone) {
+      setPhase("idle");
+      return;
+    }
+    setPhase("loading");
+    const t = window.setTimeout(() => {
+      setPhase("playing");
+    }, HERO_LOADING_MS);
+    return () => window.clearTimeout(t);
+  }, [introDone]);
+
+  const motionPhase = phase === "playing" ? "show" : "hide";
+  const showLoadingOverlay = introDone && phase === "loading";
 
   return (
     <section
       id="hero"
       className="relative min-h-screen w-full overflow-hidden bg-[var(--color-fg-strong)] text-[var(--color-fg-inverse)]"
     >
-      {/* Full-bleed background image with built-in dark tint */}
+      {showLoadingOverlay ? (
+        <div
+          className="absolute inset-0 z-[80] flex flex-col items-center justify-center gap-4 bg-[var(--color-fg-strong)]"
+          aria-busy="true"
+          aria-live="polite"
+        >
+          <div
+            className="size-9 rounded-full border-2 border-[color-mix(in_srgb,var(--color-fg-inverse)_22%,transparent)] border-t-[var(--color-fg-inverse)] motion-safe:animate-spin"
+            aria-hidden
+          />
+          <span className="sr-only">Loading hero</span>
+        </div>
+      ) : null}
+
       <motion.div
         className="absolute inset-0"
-        initial={false}
-        animate={phase}
-        variants={{
-          hide: { opacity: 0 },
-          show: {
-            opacity: 1,
-            transition: { duration: 1.5, ease: "easeOut" },
-          },
-        }}
+        initial="hide"
+        animate={motionPhase}
+        variants={bgVariants}
         style={{
           backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url(${heroBgUrl})`,
           backgroundSize: "cover",
@@ -167,27 +259,25 @@ const Hero = ({ introDone }: HeroProps) => {
 
       <motion.div
         className="pointer-events-none absolute inset-0 mix-blend-overlay"
-        initial={false}
-        animate={phase}
-        variants={{
-          hide: { opacity: 0 },
-          show: {
-            opacity: 0.14,
-            transition: { duration: 1, ease: "easeOut", delay: 0.08 },
-          },
-        }}
+        initial="hide"
+        animate={motionPhase}
+        variants={noiseVariants}
         style={{ backgroundImage: NOISE_BG }}
         aria-hidden
       />
 
-      <motion.div
-        className="pointer-events-none absolute inset-0 z-[1]"
-        initial={false}
-        animate={phase}
-        variants={bandParent}
-      >
+      <div className="pointer-events-none absolute inset-0 z-[1]">
         <motion.div
-          variants={bandLeft}
+          initial="hide"
+          animate={motionPhase}
+          variants={bandRightVariants}
+          className="absolute right-0 top-0 hidden h-full w-[min(22vw,200px)] md:block lg:w-[min(20vw,240px)]"
+          style={{ background: "var(--color-accent-strong)" }}
+        />
+        <motion.div
+          initial="hide"
+          animate={motionPhase}
+          variants={bandLeftVariants}
           className="absolute left-0 top-0 h-full w-[92vw] md:w-[58vw] lg:w-[52vw] xl:w-[850px] rounded-tr-[100px] lg:rounded-tr-[400px]"
           style={{
             background:
@@ -196,19 +286,13 @@ const Hero = ({ introDone }: HeroProps) => {
               "inset -1px 0 0 color-mix(in srgb, var(--color-fg-inverse) 8%, transparent)",
           }}
         />
-        <motion.div
-          variants={bandRight}
-          className="absolute right-0 top-0 hidden h-full w-[min(22vw,200px)] md:block lg:w-[min(20vw,240px)]"
-          style={{ background: "var(--color-accent-strong)" }}
-        />
-      </motion.div>
+      </div>
 
-      {/* Dots: only right semicircle, only over orange; vertically centered below fixed header. */}
       <motion.div
         className={`pointer-events-none absolute right-0 z-[2] hidden h-[calc(100svh-6rem)] w-[min(22vw,200px)] overflow-hidden md:block lg:w-[min(20vw,240px)] ${HEADER_OFFSET_CLASS} text-[var(--color-fg-inverse)]`}
-        initial={false}
-        animate={phase}
-        variants={dotsReveal}
+        initial="hide"
+        animate={motionPhase}
+        variants={dotsVariants}
       >
         <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
           <DotBurst className="absolute top-1/2 left-0 h-[min(72dvh,calc(100svh-8rem))] w-[min(72dvh,calc(100svh-8rem))] max-h-full -translate-x-1/2 -translate-y-1/2" />
@@ -217,51 +301,44 @@ const Hero = ({ introDone }: HeroProps) => {
 
       <motion.div
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[42%] bg-gradient-to-t from-[color-mix(in_srgb,var(--color-fg-strong)_72%,transparent)] via-[color-mix(in_srgb,var(--color-fg-strong)_22%,transparent)] to-transparent"
-        initial={false}
-        animate={phase}
-        variants={{
-          hide: { opacity: 0 },
-          show: {
-            opacity: 1,
-            transition: { duration: 0.85, ease: "easeOut", delay: 0.35 },
-          },
-        }}
+        initial="hide"
+        animate={motionPhase}
+        variants={bottomGradientVariants}
         aria-hidden
       />
 
       <div className="relative z-10 grid min-h-screen w-full grid-cols-12 gap-x-6 px-6 pb-16 pt-28 md:gap-x-8 md:px-10 lg:px-16 lg:pt-32">
-        <motion.div
-          className="col-span-12 flex flex-col justify-end pt-8 md:col-span-6 md:justify-center md:pt-0 lg:col-span-6 lg:pr-4 max-w-[82vw] md:max-w-[50vw] xl:max-w-[750px]"
-          initial={false}
-          animate={phase}
-          variants={copyParent}
-        >
-          <motion.h1
+        <div className="col-span-12 flex max-w-[82vw] flex-col justify-end pt-8 md:col-span-6 md:max-w-[50vw] md:justify-center md:pt-0 lg:col-span-6 lg:pr-4 xl:max-w-[750px]">
+          <h1
             className="hero-title max-w-[14ch] leading-[0.9] drop-shadow-[0_4px_48px_color-mix(in_srgb,var(--color-fg-strong)_55%,transparent)]"
             style={{ fontFamily: "var(--font-display)" }}
-            initial={false}
-            animate={phase}
-            variants={headlineParent}
           >
             <motion.span
-              variants={copyItem}
               className="block text-[var(--color-fg-inverse)]"
+              initial="hide"
+              animate={motionPhase}
+              variants={heroTitleSlideVariants}
             >
               Digitalisation
             </motion.span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            variants={copyItem}
+          <ParagraphSlideText
             className="hero-body max-w-xl text-[color-mix(in_srgb,var(--color-fg-inverse)_92%,transparent)] [text-shadow:0_2px_28px_color-mix(in_srgb,var(--color-fg-strong)_50%,transparent)] md:mb-10 lg:mt-10"
+            initial="hide"
+            animate={motionPhase}
+            variants={heroParagraphSlideVariants}
           >
             Digitalisation is a social and business phenomenon, powered by the
             technologies ET brings to bear—woven processes, systems, customers,
             partners, and employees as the ultimate connected business.
-          </motion.p>
+          </ParagraphSlideText>
+
           <motion.div
-            variants={copyItem}
-            className="flex flex-col gap-5 sm:flex-row sm:items-center"
+            className="-mt-2 flex flex-col gap-5 sm:-mt-4 sm:flex-row sm:items-center md:-mt-5"
+            initial="hide"
+            animate={motionPhase}
+            variants={heroCtasSlideVariants}
           >
             <a
               href="#solutions"
@@ -301,36 +378,28 @@ const Hero = ({ introDone }: HeroProps) => {
               </span>
             </button>
           </motion.div>
-        </motion.div>
+        </div>
 
         <motion.div
           className="col-span-12 mt-auto flex justify-start pb-2 md:absolute md:bottom-6 md:left-10 md:col-span-auto lg:bottom-10 lg:left-14"
-          initial={false}
-          animate={phase}
-          variants={scrollParent}
+          initial="hide"
+          animate={motionPhase}
+          variants={heroScrollVariants}
         >
-          <motion.div
-            variants={copyItem}
-            className="flex flex-col items-center gap-2"
-          >
-            {/* Vertical Track */}
+          <div className="flex flex-col items-center gap-2">
             <div className="relative h-14 w-[1.5px] overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-fg-inverse)_15%,transparent)]">
-              {/* Dropping Beat */}
               <div className="animate-beat-drop absolute left-0 top-0 h-1/2 w-full bg-[color-mix(in_srgb,var(--color-fg-inverse)_45%,transparent)]" />
             </div>
-
-            {/* Pulsing Circle */}
             <div
               className="animate-heartbeat-circle flex h-11 w-11 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--color-fg-inverse)_24%,transparent)] text-[color-mix(in_srgb,var(--color-fg-inverse)_58%,transparent)]"
               aria-hidden
             >
-              {/* Pulsing Chevron */}
               <ChevronDown
                 className="animate-heartbeat-chevron size-5"
                 strokeWidth={1.5}
               />
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

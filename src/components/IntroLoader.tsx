@@ -318,7 +318,7 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
             className="invisible mt-4 w-px shrink-0 origin-bottom scale-y-0 self-stretch opacity-0"
             style={{ background: "var(--color-fg-inverse)" }}
           />
-          <div className="flex min-w-0 max-w-[min(560px,calc(100vw-3rem))] flex-col items-start text-left">
+          <div className="relative flex min-w-0 max-w-[min(560px,calc(100vw-3rem))] flex-col items-start text-left">
             <div
               ref={titleRef}
               className="type-intro-title invisible w-full opacity-0"
@@ -327,6 +327,19 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
               <br />
               today
             </div>
+            {/* Ref required for GSAP timeline; matches existing body tween (no visible copy). */}
+            <div
+              ref={bodyRef}
+              className="invisible opacity-0"
+              aria-hidden
+              style={{
+                position: "absolute",
+                width: 0,
+                height: 0,
+                overflow: "hidden",
+                pointerEvents: "none",
+              }}
+            />
           </div>
         </div>
       </div>

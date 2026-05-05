@@ -1,12 +1,5 @@
 import { motion } from "framer-motion";
-
-const navItems = [
-  { label: "Our Solutions", href: "#solutions" },
-  { label: "Our Products", href: "#products" },
-  { label: "About Us", href: "#about" },
-  { label: "News", href: "#news" },
-  { label: "Contact Us", href: "#contact" },
-] as const;
+import { navItems } from "../constants/headerNav.ts";
 
 const Header = () => {
   return (
@@ -48,10 +41,13 @@ const Header = () => {
             }}
           >
             <span className="relative block overflow-hidden">
-              <span className="font-semibold text-xl inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
+              <span className="text-lg font-semibold inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
                 {label}
               </span>
-              <span className="text-[var(--color-primary-blue)] font-semibold text-xl absolute left-0 top-0 inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0" aria-hidden="true">
+              <span
+                className="text-[var(--color-primary-blue)] text-lg font-semibold absolute left-0 top-0 inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0"
+                aria-hidden="true"
+              >
                 {label}
               </span>
             </span>
@@ -69,7 +65,10 @@ const Header = () => {
           <span className="text-md transform-gpu transition-transform duration-300 ease-out group-hover:translate-y-full">
             Inquiry
           </span>
-          <span className="text-md absolute inset-0 transform-gpu transition-transform duration-300 ease-out -translate-y-full group-hover:translate-y-0" aria-hidden="true">
+          <span
+            className="text-md absolute inset-0 transform-gpu transition-transform duration-300 ease-out -translate-y-full group-hover:translate-y-0"
+            aria-hidden="true"
+          >
             Inquiry
           </span>
         </span>
