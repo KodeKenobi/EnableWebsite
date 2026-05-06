@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import heroBgUrl from "../assets/images/hero/hero-geometric.png";
+import FloatingLines from "./animations/backgrounds/FloatingLines.tsx";
 import {
   ParagraphSlideText,
   paragraphSlideVariants,
 } from "./animations/textAnimations/ParagraphSlideText.tsx";
+import HoverSlideText from "./ui/text/HoverSlideText.tsx";
 
 interface HeroProps {
   introDone: boolean;
@@ -60,7 +61,7 @@ const bgVariants = {
 const noiseVariants = {
   hide: { opacity: 0 },
   show: {
-    opacity: 0.14,
+    opacity: 0.06,
     transition: { duration: 1.35, ease: "easeOut", delay: T.noise },
   },
 } as const;
@@ -246,16 +247,23 @@ const Hero = ({ introDone }: HeroProps) => {
       ) : null}
 
       <motion.div
-        className="absolute inset-0"
+        className="pointer-events-none absolute inset-0"
         initial="hide"
         animate={motionPhase}
         variants={bgVariants}
-        style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url(${heroBgUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
+      >
+        <FloatingLines
+          linesGradient={["#ff9346", "#7cff67", "#ffee51", "#5227FF"]}
+          enabledWaves={["middle", "bottom"]}
+          lineCount={[5, 7]}
+          lineDistance={[10, 8]}
+          animationSpeed={0.42}
+          interactive={false}
+          parallax={false}
+          parallaxStrength={0}
+          mixBlendMode="screen"
+        />
+      </motion.div>
 
       <motion.div
         className="pointer-events-none absolute inset-0 mix-blend-overlay"
@@ -272,7 +280,11 @@ const Hero = ({ introDone }: HeroProps) => {
           animate={motionPhase}
           variants={bandRightVariants}
           className="absolute right-0 top-0 hidden h-full w-[min(22vw,200px)] md:block lg:w-[min(20vw,240px)]"
-          style={{ background: "var(--color-accent-strong)" }}
+          style={{
+            background: "var(--color-accent-strong)",
+            boxShadow:
+              "inset 1px 0 0 color-mix(in srgb, var(--color-fg-inverse) 16%, transparent), inset -1px 0 0 color-mix(in srgb, var(--color-fg-strong) 26%, transparent)",
+          }}
         />
         <motion.div
           initial="hide"
@@ -307,10 +319,28 @@ const Hero = ({ introDone }: HeroProps) => {
         aria-hidden
       />
 
+      <motion.div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-4 bg-[#eceff1]"
+        initial="hide"
+        animate={motionPhase}
+        variants={bottomGradientVariants}
+        aria-hidden
+      >
+        <div className="absolute left-1/2 top-0 h-2 w-28 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-[var(--color-accent-strong)]" />
+      </motion.div>
+
       <div className="relative z-10 grid min-h-screen w-full grid-cols-12 gap-x-6 px-6 pb-16 pt-28 md:gap-x-8 md:px-10 lg:px-16 lg:pt-32">
-        <div className="col-span-12 flex max-w-[82vw] flex-col justify-end pt-8 md:col-span-6 md:max-w-[50vw] md:justify-center md:pt-0 lg:col-span-6 lg:pr-4 xl:max-w-[750px]">
+        <div
+          className="col-span-12 flex max-w-[82vw] flex-col justify-end pt-8 md:col-span-6 md:max-w-[50vw] md:justify-center md:pt-0 lg:col-span-6 lg:pr-4 xl:max-w-[750px]"
+          style={{
+            transform: "scale(var(--hero-text-scale, 1)) translateZ(0)",
+            transformOrigin: "left center",
+            opacity: "var(--hero-text-opacity, 1)",
+            willChange: "transform, opacity",
+          }}
+        >
           <h1
-            className="hero-title max-w-[14ch] leading-[0.9] drop-shadow-[0_4px_48px_color-mix(in_srgb,var(--color-fg-strong)_55%,transparent)]"
+            className="hero-title text-[var(--color-fg-strong)] max-w-[14ch] leading-[0.9] drop-shadow-[0_4px_48px_color-mix(in_srgb,var(--color-fg-strong)_55%,transparent)]"
             style={{ fontFamily: "var(--font-display)" }}
           >
             <motion.span
@@ -324,7 +354,7 @@ const Hero = ({ introDone }: HeroProps) => {
           </h1>
 
           <ParagraphSlideText
-            className="hero-body max-w-xl text-[color-mix(in_srgb,var(--color-fg-inverse)_92%,transparent)] [text-shadow:0_2px_28px_color-mix(in_srgb,var(--color-fg-strong)_50%,transparent)] md:mb-10 lg:mt-10"
+            className="hero-body max-w-xl text-[var(--color-fg-inverse)] md:mb-10 lg:mt-10"
             initial="hide"
             animate={motionPhase}
             variants={heroParagraphSlideVariants}
@@ -344,17 +374,10 @@ const Hero = ({ introDone }: HeroProps) => {
               href="#solutions"
               className="group type-button inline-flex items-center gap-2 border-b border-[color-mix(in_srgb,var(--color-fg-inverse)_45%,transparent)] pb-1 text-[var(--color-fg-inverse)]"
             >
-              <span className="relative inline-flex overflow-hidden whitespace-nowrap">
-                <span className="transform-gpu transition-transform duration-300 ease-out group-hover:translate-y-full">
-                  Download presentation
-                </span>
-                <span
-                  className="absolute inset-0 transform-gpu transition-transform duration-300 ease-out -translate-y-full group-hover:translate-y-0"
-                  aria-hidden="true"
-                >
-                  Download presentation
-                </span>
-              </span>
+              <HoverSlideText
+                text="Download presentation"
+                wrapperClassName="whitespace-nowrap"
+              />
               <ArrowRight
                 className="size-4 shrink-0 transition-transform duration-300 ease-out group-hover:translate-x-1"
                 strokeWidth={1.75}
@@ -365,17 +388,10 @@ const Hero = ({ introDone }: HeroProps) => {
               type="button"
               className="group type-button self-start inline-flex items-center justify-center rounded-full !bg-transparent px-6 py-2.5 text-[var(--color-fg-inverse)] transition-all duration-300 hover:!bg-[color-mix(in_srgb,var(--color-fg-inverse)_8%,transparent)]"
             >
-              <span className="relative inline-flex overflow-hidden whitespace-nowrap">
-                <span className="transform-gpu transition-transform duration-300 ease-out group-hover:translate-y-full">
-                  Our products
-                </span>
-                <span
-                  className="absolute inset-0 transform-gpu transition-transform duration-300 ease-out -translate-y-full group-hover:translate-y-0"
-                  aria-hidden="true"
-                >
-                  Our products
-                </span>
-              </span>
+              <HoverSlideText
+                text="Our products"
+                wrapperClassName="whitespace-nowrap"
+              />
             </button>
           </motion.div>
         </div>

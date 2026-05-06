@@ -1,19 +1,11 @@
-"use client";
-
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import Link from "next/link";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { useCookies } from "next-client-cookies";
-import { AnimatePresence, motion } from "motion/react";
-import CookieIcon from "@/assets/svgs/_nav-bar/Environment/Cookie.svg";
-import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import HoverSlideText from "../ui/text/HoverSlideText.tsx";
 
-export interface Cookie extends RequestCookie {
+export interface Cookie {
+  name: string;
+  value: string;
   type: "essential" | "analytics" | "marketing" | "functional";
-}
-
-interface CookiesModalProps {
-  cookiesValues: RequestCookie[];
 }
 
 const cookiesArray: Cookie[] = [
@@ -39,23 +31,44 @@ const cookiesArray: Cookie[] = [
   },
 ];
 
-export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
-  const store = useCookies();
+const COOKIE_MAX_AGE_DAYS = 30;
+
+function setCookie(name: string, value: string): void {
+  try {
+    const expires = new Date(
+      Date.now() + COOKIE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000,
+    ).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`;
+  } catch {
+    /* no-op */
+  }
+}
+
+function getCookie(name: string): string | null {
+  try {
+    const key = `${name}=`;
+    const match = document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith(key));
+    return match ? match.slice(key.length) : null;
+  } catch {
+    return null;
+  }
+}
+
+export default function CookiesModal() {
   const [open, setOpen] = useState<boolean>(false);
   const [customize, setCustomize] = useState<boolean>(false);
   const [cookies, setCookies] = useState<Cookie[]>(cookiesArray);
 
-  const activeCookies = cookiesArray.some((cookie) =>
-    cookiesValues.some((value) => value.name === cookie.name),
+  const activeCookies = cookiesArray.some(
+    (cookie) => getCookie(cookie.name) !== null,
   );
 
   const handleAcceptAll = () => {
-    console.log("Handle Accept All");
-
     cookies.forEach((cookie) => {
-      store.set(cookie.name, "true", {
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-      });
+      setCookie(cookie.name, "true");
     });
 
     setOpen(false);
@@ -63,25 +76,19 @@ export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
 
   const handleRejectAll = () => {
     cookies.forEach((cookie) => {
-      store.set(cookie.name, "false", {
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-      });
+      setCookie(cookie.name, "false");
     });
 
     setOpen(false);
   };
 
   const handleCustomize = () => {
-    console.log("customize");
     setCustomize(!customize);
   };
 
   const handleSubmitCustomCookieConfig = () => {
-    console.log("Custom cookie configuration submitted!");
     cookies.forEach((cookie) => {
-      store.set(cookie.name, cookie.value, {
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-      });
+      setCookie(cookie.name, cookie.value);
     });
     setOpen(false);
   };
@@ -109,10 +116,23 @@ export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
     <>
       <button
         onClick={() => setOpen(!open)}
-        className="cursor-pointer p-2 pr-8 bg-navy shadow-sm shadow-black/20 fixed bottom-6 right-0 z-50 rounded-l-full translate-x-4 hover:translate-x-0 transition-transform duration-300"
+        className="cursor-pointer p-2 pr-8 bg-navy border border-white/35 shadow-sm shadow-black/20 fixed bottom-6 right-0 z-50 rounded-l-full translate-x-4 hover:translate-x-0 transition-transform duration-300"
+        aria-label="Open cookies preferences"
       >
-        <Image src={CookieIcon} alt="Cookie Icon" />
+        <span className="inline-flex h-6 w-6 items-center justify-center text-lg">
+          🍪
+        </span>
       </button>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={open ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className={`fixed inset-0 z-[99990] bg-[color-mix(in_srgb,var(--color-fg-strong)_62%,transparent)] backdrop-blur-md transition-opacity ${
+          open ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+        onClick={() => setOpen(false)}
+        aria-hidden
+      />
       <motion.div
         initial={{
           y: "100%",
@@ -122,7 +142,7 @@ export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
           duration: 0.5,
           ease: "easeInOut",
         }}
-        className="shadow-2xl w-full overflow-y-auto max-w-[700px] shadow-black/30 z-[99999] fixed bottom-0 left-1/2 -translate-x-1/2 bg-navy font-light text-white py-9 px-8 md:px-32 text-center"
+        className="shadow-2xl rounded-t-[36px] md:rounded-t-[46px] w-full overflow-y-auto max-w-[700px] shadow-black/30 z-[99999] fixed bottom-0 left-1/2 -translate-x-1/2 bg-navy font-light text-white py-9 px-8 md:px-32 text-center"
         style={{
           maxHeight: "calc(100% - 116px)",
         }}
@@ -174,7 +194,7 @@ export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
                     </p>
                     <p className="text-xs">
                       We use analytical cookies to measure how you use our
-                      website and help improve carrhaecap.com.
+                      website and help improve enable.com.
                     </p>
                   </div>
                   <div className="flex items-center justify-center space-y-2.5 flex-col">
@@ -189,9 +209,9 @@ export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
                     <p className="text-xs">
                       These cookies let us save the choices you make and some of
                       the information you provide when browsing
-                      basispoint.group. They don’t track your browsing activity
+                      enable.com. They do not track your browsing activity
                       on other websites. Without functional cookies,
-                      carrhaecap.com may not work reliably.
+                      enable.com may not work reliably.
                     </p>
                   </div>
                   <div className="flex items-center justify-center space-y-2.5 flex-col text-sm">
@@ -205,7 +225,7 @@ export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
                     </p>
                     <p className="text-xs">
                       We use marketing cookies to display personalised messages
-                      on the carrhaecap.com website and to show you
+                      on the enable.com website and to show you
                       advertisements from us and selected third parties on other
                       sites you may visit. We work with approved partners to
                       deliver relevant content and to measure the effectiveness
@@ -230,7 +250,7 @@ export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
             >
               <div className="min-h-0">
                 <h2 className="font-serif text-2xl">
-                  Welcome to Carrhae Capital
+                  Welcome to Enable
                 </h2>
 
                 <p className="mt-8 mx-auto font-light leading-[1.37em]">
@@ -240,13 +260,16 @@ export default function CookiesModal({ cookiesValues }: CookiesModalProps) {
                 </p>
                 <p className="mt-4">
                   For more information please see our{" "}
-                  <Link
-                    href="/disclosures/cookies-policy"
-                    target="_blank"
-                    className="underline"
+                  <a
+                    href="/disclaimers"
+                    className="group inline-flex items-center"
                   >
-                    Cookie Policy
-                  </Link>
+                    <HoverSlideText
+                      text="Cookie Policy"
+                      className="underline"
+                      hoverClassName="underline text-[var(--color-primary-blue)]"
+                    />
+                  </a>
                   .
                 </p>
               </div>
@@ -300,16 +323,16 @@ const CookiesButton = ({
   return (
     <button
       onMouseDown={onClick}
-      className={`cursor-pointer font-sans text-sm relative pb-2 px-0 text-left ${
+      className={`group cursor-pointer font-sans text-sm relative pb-2 px-0 text-left ${
         active ? "opacity-100" : "opacity-35 hover:opacity-100"
       } transition-opacity duration-300`}
     >
-      <span
-        className="uppercase tracking-widest font-semibold leading-[0.25em] whitespace-nowrap"
-        dangerouslySetInnerHTML={{
-          __html: label,
-        }}
-      ></span>
+      <HoverSlideText
+        text={label}
+        wrapperClassName="whitespace-nowrap"
+        className="uppercase tracking-widest font-semibold leading-[1.1]"
+        hoverClassName="uppercase tracking-widest font-semibold leading-[1.1] text-[var(--color-primary-blue)]"
+      />
       <i className="w-11 h-px bg-gold/35 block absolute bottom-0 left-0" />
     </button>
   );
