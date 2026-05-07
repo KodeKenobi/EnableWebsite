@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import HoverSlideText from "../ui/text/HoverSlideText.tsx";
+import HoverSlideText from "../animations/textAnimations/HoverSlideText.tsx";
 
 export interface Cookie {
   name: string;
@@ -208,10 +208,10 @@ export default function CookiesModal() {
                     </p>
                     <p className="text-xs">
                       These cookies let us save the choices you make and some of
-                      the information you provide when browsing
-                      enable.com. They do not track your browsing activity
-                      on other websites. Without functional cookies,
-                      enable.com may not work reliably.
+                      the information you provide when browsing enable.com. They
+                      do not track your browsing activity on other websites.
+                      Without functional cookies, enable.com may not work
+                      reliably.
                     </p>
                   </div>
                   <div className="flex items-center justify-center space-y-2.5 flex-col text-sm">
@@ -225,11 +225,11 @@ export default function CookiesModal() {
                     </p>
                     <p className="text-xs">
                       We use marketing cookies to display personalised messages
-                      on the enable.com website and to show you
-                      advertisements from us and selected third parties on other
-                      sites you may visit. We work with approved partners to
-                      deliver relevant content and to measure the effectiveness
-                      of these advertisements.
+                      on the enable.com website and to show you advertisements
+                      from us and selected third parties on other sites you may
+                      visit. We work with approved partners to deliver relevant
+                      content and to measure the effectiveness of these
+                      advertisements.
                     </p>
                   </div>
                 </div>
@@ -249,9 +249,7 @@ export default function CookiesModal() {
               className="mx-auto max-w-[480px] w-full min-h-0 grid overflow-hidden"
             >
               <div className="min-h-0">
-                <h2 className="font-serif text-2xl">
-                  Welcome to Enable
-                </h2>
+                <h2 className="font-serif text-2xl">Welcome to Enable</h2>
 
                 <p className="mt-8 mx-auto font-light leading-[1.37em]">
                   Our website uses essential cookies that are required for the

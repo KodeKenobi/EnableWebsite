@@ -6,7 +6,7 @@ import {
   ParagraphSlideText,
   paragraphSlideVariants,
 } from "./animations/textAnimations/ParagraphSlideText.tsx";
-import HoverSlideText from "./ui/text/HoverSlideText.tsx";
+import HoverSlideText from "./animations/textAnimations/HoverSlideText.tsx";
 
 interface HeroProps {
   introDone: boolean;
@@ -163,6 +163,19 @@ const heroScrollVariants = {
 /** Matches `Header` (`h-24`) so hero ornaments never enter the nav band. */
 const HEADER_OFFSET_CLASS = "top-24";
 
+function clamp01(value: number): number {
+  return Math.min(Math.max(value, 0), 1);
+}
+
+function setHeroTextVars(root: HTMLElement, progress: number): void {
+  const clamped = clamp01(progress);
+  const scale = 1 - clamped * 0.11;
+  const opacity = Math.max(0, 1 - clamped * 1.35);
+  root.style.setProperty("--hero-text-progress", clamped.toFixed(4));
+  root.style.setProperty("--hero-text-scale", scale.toFixed(4));
+  root.style.setProperty("--hero-text-opacity", opacity.toFixed(4));
+}
+
 function DotBurst({ className }: { className?: string }) {
   const rings = [12, 24, 36, 48, 60, 72];
   return (
@@ -211,6 +224,48 @@ function DotBurst({ className }: { className?: string }) {
 
 const Hero = ({ introDone }: HeroProps) => {
   const [phase, setPhase] = useState<HeroRevealPhase>("idle");
+
+  useEffect(() => {
+    const root = document.documentElement;
+    let rafId = 0;
+    let current = 0;
+    let target = 0;
+
+    const computeTargetProgress = () => {
+      const vh = Math.max(window.innerHeight, 1);
+      return clamp01(window.scrollY / (vh * 0.6));
+    };
+
+    const tick = () => {
+      current += (target - current) * 0.18;
+      setHeroTextVars(root, current);
+
+      if (Math.abs(target - current) > 0.001) {
+        rafId = window.requestAnimationFrame(tick);
+      } else {
+        current = target;
+        setHeroTextVars(root, current);
+        rafId = 0;
+      }
+    };
+
+    const onScroll = () => {
+      target = computeTargetProgress();
+      if (!rafId) rafId = window.requestAnimationFrame(tick);
+    };
+
+    target = computeTargetProgress();
+    current = target;
+    setHeroTextVars(root, current);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (rafId) window.cancelAnimationFrame(rafId);
+      setHeroTextVars(root, 0);
+    };
+  }, []);
 
   useEffect(() => {
     if (!introDone) {
