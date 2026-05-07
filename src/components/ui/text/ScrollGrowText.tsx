@@ -5,6 +5,7 @@ interface ScrollGrowTextProps {
   className?: string;
   from?: "left" | "right";
   progressVar?: string;
+  motionAxis?: "x" | "y" | "both" | "none";
   xStartRem?: number;
   yStartRem?: number;
   startScale?: number;
@@ -13,8 +14,7 @@ interface ScrollGrowTextProps {
 
 /**
  * Reusable scroll-linked text treatment:
- * - starts slightly shifted on the X axis (-1 or +1 by default)
- * - starts slightly lower on the Y axis
+ * - can animate on X, Y, both, or none
  * - starts shrinked, then grows as scroll progress approaches 1
  */
 export default function ScrollGrowText({
@@ -22,23 +22,31 @@ export default function ScrollGrowText({
   className = "",
   from = "left",
   progressVar = "--services-copy-progress",
+  motionAxis = "both",
   xStartRem = 1,
   yStartRem = 0.9,
   startScale = 0.92,
   endScale = 1.06,
 }: ScrollGrowTextProps) {
   const signedX = from === "left" ? -Math.abs(xStartRem) : Math.abs(xStartRem);
+  const xOffset =
+    motionAxis === "x" || motionAxis === "both" ? `${signedX}rem` : "0rem";
+  const yOffset =
+    motionAxis === "y" || motionAxis === "both" ? `${yStartRem}rem` : "0rem";
   const scaleDelta = endScale - startScale;
 
   const style = {
-    transform: `translate3d(calc((1 - var(${progressVar}, 0)) * ${signedX}rem), calc((1 - var(${progressVar}, 0)) * ${yStartRem}rem), 0) scale(calc(${startScale} + var(${progressVar}, 0) * ${scaleDelta}))`,
+    transform: `translate3d(calc((1 - var(${progressVar}, 0)) * ${xOffset}), calc((1 - var(${progressVar}, 0)) * ${yOffset}), 0) scale(calc(${startScale} + var(${progressVar}, 0) * ${scaleDelta}))`,
     transformOrigin: "center center",
     willChange: "transform, opacity",
     opacity: `calc(0.14 + var(${progressVar}, 0) * 0.86)`,
   } satisfies CSSProperties;
 
   return (
-    <span className={`block transform-gpu [backface-visibility:hidden] ${className}`} style={style}>
+    <span
+      className={`block transform-gpu [backface-visibility:hidden] ${className}`}
+      style={style}
+    >
       {children}
     </span>
   );

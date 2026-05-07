@@ -127,6 +127,21 @@ body {
   text-align: left;
 }
 
+/* Shared typography scale for section headings/copy (no layout rules). */
+.section-title-type {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 6.5vw, 5.25rem);
+  font-weight: 400;
+  line-height: 0.9;
+}
+
+.section-body-type {
+  font-family: var(--font-body-light);
+  font-size: clamp(1.25rem, 2vw, 1.25rem);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
 .type-intro-title {
   color: var(--color-fg-inverse);
   font-family: var(--font-display);

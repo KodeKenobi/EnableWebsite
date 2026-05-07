@@ -98,17 +98,28 @@ export default function ServicesSection() {
       />
 
       <div className="relative mx-auto flex h-full w-full max-w-[1200px] flex-col justify-between px-6 pb-6 pt-10 md:px-10 md:pb-8 md:pt-24 lg:px-16">
-        <div className="text-center">
-          <h2
-            className="hero-title mx-auto max-w-[14ch] leading-[0.9]"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            <ScrollGrowText from="left">Services</ScrollGrowText>
+        <div className="text-right">
+          <h2 className="section-title-type ml-auto max-w-[14ch] text-right">
+            <ScrollGrowText
+              from="bottom"
+              yStartRem={0.5}
+              motionAxis="y"
+              endScale={1.05}
+            >
+              Services
+            </ScrollGrowText>
           </h2>
-          <p className="hero-body mx-auto mt-6 max-w-xl">
-            <ScrollGrowText from="right" startScale={0.94} endScale={1.05}>
-              Our specialized services, personalized approach, and unwavering
-              commitment to excellence.
+          <p className="section-body-type ml-auto mt-6 max-w-xl text-right">
+            <ScrollGrowText
+              from="left"
+              yStartRem={1}
+              startScale={0.94}
+              endScale={1.05}
+            >
+              At Enable Technologies we get to know your business and then
+              together assess where technology can optimize or improve your
+              business utilizing our specialized services, personalized
+              approach, and unwavering commitment to excellence.
             </ScrollGrowText>
           </p>
         </div>

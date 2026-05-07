@@ -3,6 +3,7 @@ import IntroLoader from "./components/IntroLoader.tsx";
 import Header from "./components/Header.tsx";
 import Hero from "./components/Hero.tsx";
 import ServicesSection from "./components/ServicesSection.tsx";
+import SolutionsSection from "./components/SolutionsSection.tsx";
 import CookiesModal from "./components/modals/CookiesModal.tsx";
 import DisclaimersPage from "./disclaimers/DisclaimersPage.tsx";
 import "./App.css";
@@ -133,6 +134,7 @@ function App() {
       <div className="relative z-20 pointer-events-none">
         <div className="pointer-events-none h-screen" aria-hidden />
         <ServicesSection />
+        <SolutionsSection />
       </div>
 
       {introDone && <Header />}

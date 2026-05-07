@@ -9,6 +9,7 @@ interface LinesPullUpProps {
   delay?: number;
   duration?: number;
   stagger?: number;
+  once?: boolean;
 }
 
 export function LinesPullUp({
@@ -18,10 +19,11 @@ export function LinesPullUp({
   delay = 0,
   duration = 0.5,
   stagger = 0.15,
+  once = true,
 }: LinesPullUpProps) {
   const [lines, setLines] = useState<string[][]>([]);
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true });
+  const isInView = useInView(ref, { once });
 
   useEffect(() => {
     if (!ref.current || typeof window === "undefined") return;
