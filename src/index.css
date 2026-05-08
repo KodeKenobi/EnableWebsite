@@ -76,6 +76,34 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  scroll-padding-top: 5rem;
+}
+
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 6rem;
+  }
+}
+
+#hero,
+#solutions,
+#our-solutions,
+#our-products,
+#contact {
+  scroll-margin-top: 5rem;
+}
+
+@media (min-width: 768px) {
+  #hero,
+  #solutions,
+  #our-solutions,
+  #our-products,
+  #contact {
+    scroll-margin-top: 6rem;
+  }
+}
+
 /* Typography Classes */
 .type-nav {
   color: var(--color-fg);
@@ -125,6 +153,12 @@ body {
   margin: 0 0 2.5rem;
   padding: 0;
   text-align: left;
+}
+
+@media (max-width: 767px) {
+  .hero-body {
+    text-align: center;
+  }
 }
 
 /* Shared typography scale for section headings/copy (no layout rules). */
@@ -181,15 +215,29 @@ body {
   line-height: 1.45;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-*::-webkit-scrollbar {
-  display: none;
+/* Global vertical scrollbar styling */
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: #1f4b62 #dbe5eb;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-* {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #dbe5eb;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #2b6e8f 0%, #1f4b62 100%);
+  border-radius: 999px;
+  border: 2px solid #dbe5eb;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #3486ae 0%, #255d7a 100%);
 }
 
 h1,

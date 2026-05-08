@@ -65,16 +65,16 @@ export default function ServicesSection() {
     <section
       id="solutions"
       ref={sectionRef}
-      className="pointer-events-auto relative z-20 h-screen overflow-hidden bg-[#ebedef] text-[#0a2f3e]"
+      className="pointer-events-auto relative z-20 min-h-[100svh] overflow-hidden bg-[#ebedef] text-[#0a2f3e]"
     >
       <div
         className="absolute inset-x-0 bottom-0 h-[46%] bg-[#063244]"
         aria-hidden
       />
 
-      <div className="relative mx-auto flex h-full w-full max-w-[1200px] flex-col justify-between px-6 pb-6 pt-10 md:px-10 md:pb-8 md:pt-24 lg:px-16">
-        <div className="text-right">
-          <h2 className="section-title-type ml-auto max-w-[14ch] text-right">
+      <div className="relative mx-auto flex min-h-[100svh] w-full max-w-[1200px] flex-col justify-between px-4 pb-5 pt-8 sm:px-6 md:px-10 md:pb-8 md:pt-20 lg:px-16 lg:pt-24">
+        <div className="text-center md:text-right">
+          <h2 className="section-title-type mx-auto max-w-[14ch] text-center md:ml-auto md:mr-0 md:text-right">
             <ScrollGrowText
               from="right"
               yStartRem={0.5}
@@ -84,7 +84,7 @@ export default function ServicesSection() {
               Services
             </ScrollGrowText>
           </h2>
-          <p className="section-body-type ml-auto mt-6 max-w-xl text-right">
+          <p className="section-body-type mx-auto mt-5 max-w-xl text-center md:ml-auto md:mr-0 md:mt-6 md:text-right">
             <ScrollGrowText
               from="left"
               yStartRem={1}
@@ -99,11 +99,12 @@ export default function ServicesSection() {
           </p>
         </div>
 
-        <div className="relative flex min-h-0 flex-1 items-center justify-center py-3 md:py-4">
+        <div className="relative flex min-h-0 flex-1 items-center justify-center py-2 md:py-4">
           <CircularCardStack
             items={services.map((service) => ({
               id: service.title,
               gradient: service.gradient,
+              lottieSrc: service.lottieSrc,
             }))}
             activeIndex={activeIndex}
           />

@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const footerLinks = {
   solutions: [
     "Enterprise",
@@ -8,12 +10,6 @@ const footerLinks = {
   ],
   company: ["About", "Industries", "Careers", "Contact"],
 };
-
-const socialLinks = [
-  { label: "LinkedIn", href: "#" },
-  { label: "X", href: "#" },
-  { label: "YouTube", href: "#" },
-];
 
 export default function FooterSection() {
   const year = new Date().getFullYear();
@@ -29,11 +25,16 @@ export default function FooterSection() {
         aria-hidden
       />
 
-      <div className="relative mx-auto w-full max-w-[1400px] px-6 pb-8 pt-14 md:px-10 md:pb-10 lg:px-16 lg:pt-16">
+      <div className="relative mx-auto w-full max-w-[1400px] px-4 pb-8 pt-12 sm:px-6 md:px-10 md:pb-10 lg:px-16 lg:pt-16">
         <div className="grid gap-10 border-b border-white/15 pb-10 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr]">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          >
             <p className="type-kicker text-white/75">Enable Technologies</p>
-            <h3 className="mt-4 font-[var(--font-display)] text-4xl leading-[0.95] text-white md:text-5xl">
+            <h3 className="mt-4 font-[var(--font-display)] text-3xl leading-[0.95] text-white sm:text-4xl md:text-5xl">
               Build What
               <br />
               Comes Next.
@@ -48,57 +49,82 @@ export default function FooterSection() {
             >
               Start a Project
             </a>
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ delay: 0.12, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+          >
             <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/65">
               Solutions
             </h4>
             <ul className="mt-4 space-y-2.5">
               {footerLinks.solutions.map((item) => (
-                <li key={item}>
+                <motion.li
+                  key={item}
+                  initial={{ opacity: 0, x: -12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{
+                    delay: 0.2 + footerLinks.solutions.indexOf(item) * 0.05,
+                    duration: 0.4,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
                   <a
                     href="#solutions"
                     className="text-sm text-white/82 transition-colors duration-300 hover:text-[var(--color-accent)]"
                   >
                     {item}
                   </a>
-                </li>
+                </motion.li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ delay: 0.2, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+          >
             <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/65">
               Company
             </h4>
             <ul className="mt-4 space-y-2.5">
               {footerLinks.company.map((item) => (
-                <li key={item}>
+                <motion.li
+                  key={item}
+                  initial={{ opacity: 0, x: -12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{
+                    delay: 0.26 + footerLinks.company.indexOf(item) * 0.05,
+                    duration: 0.4,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
                   <a
                     href="#"
                     className="text-sm text-white/82 transition-colors duration-300 hover:text-[var(--color-accent)]"
                   >
                     {item}
                   </a>
-                </li>
+                </motion.li>
               ))}
             </ul>
-            <div className="mt-6 flex items-center gap-5">
-              {socialLinks.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="text-xs uppercase tracking-[0.16em] text-white/75 transition-colors duration-300 hover:text-[var(--color-accent)]"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="flex flex-col gap-3 pt-5 text-xs text-white/55 md:flex-row md:items-center md:justify-between">
+        <motion.div
+          className="flex flex-col gap-3 pt-5 text-xs text-white/55 md:flex-row md:items-center md:justify-between"
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ delay: 0.48, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
           <p>© {year} Enable Technologies. All rights reserved.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-white/80">
@@ -108,7 +134,7 @@ export default function FooterSection() {
               Terms
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

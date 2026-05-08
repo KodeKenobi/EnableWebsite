@@ -19,9 +19,8 @@ export default function SolutionsSection() {
 
   return (
     <section
-      id="our-solutions"
       ref={sectionRef}
-      className="pointer-events-auto relative z-20 h-screen overflow-hidden bg-[#0a3042] text-[var(--color-fg-inverse)]"
+      className="pointer-events-auto relative z-20 min-h-[100svh] overflow-hidden bg-[#0a3042] text-[var(--color-fg-inverse)]"
     >
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -43,7 +42,7 @@ export default function SolutionsSection() {
         <div className="absolute left-1/2 top-0 h-2 w-28 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-[var(--color-accent-strong)]" />
       </motion.div>
 
-      <div className="relative z-[1] mx-auto flex h-full w-full max-w-[1400px] flex-col justify-between px-6 pb-16 pt-10 md:px-10 md:pt-24 lg:px-16">
+      <div className="relative z-[1] mx-auto flex min-h-[100svh] w-full max-w-[1400px] flex-col justify-between px-4 pb-12 pt-8 sm:px-6 md:px-10 md:pb-16 md:pt-20 lg:px-16 lg:pt-24">
         <div className="text-center">
           <h2 className="section-title-type mx-auto mt-3 max-w-[14ch] text-center text-white drop-shadow-[0_3px_16px_rgba(0,0,0,0.42)]">
             <LinesPullUp
@@ -68,7 +67,7 @@ export default function SolutionsSection() {
 
           <SolutionsCards
             items={solutionItems}
-            className="mx-auto mt-16 w-full max-w-[1300px]"
+            className="mx-auto mt-10 w-full max-w-[1300px] md:mt-16"
           />
         </div>
       </div>

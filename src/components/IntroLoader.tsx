@@ -112,160 +112,130 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
   useEffect(() => {
     if (!lottieReady || !logoReady) return;
 
-    let disposed = false;
     let gsapCtx: gsap.Context | null = null;
-    let innerRaf = 0;
+    gsapCtx = gsap.context(() => {
+      const logo = logoRef.current;
+      const line = lineRef.current;
+      const title = titleRef.current;
+      const body = bodyRef.current;
+      const lottieWrap = lottieWrapRef.current;
+      const content = contentRef.current;
+      if (!logo || !line || !title || !body || !lottieWrap || !content) return;
 
-    const outerRaf = window.requestAnimationFrame(() => {
-      innerRaf = window.requestAnimationFrame(() => {
-        if (disposed) return;
+      const tl = gsap.timeline({
+        defaults: { ease: "power2.out", force3D: true },
+      });
 
-        gsapCtx = gsap.context(() => {
-          const logo = logoRef.current;
-          const line = lineRef.current;
-          const title = titleRef.current;
-          const body = bodyRef.current;
-          const lottieWrap = lottieWrapRef.current;
-          const content = contentRef.current;
-          if (!logo || !line || !title || !body || !lottieWrap || !content)
-            return;
+      gsap.set([logo, line, title, body, lottieWrap], {
+        willChange: "transform, opacity",
+      });
+      gsap.set(logo, {
+        autoAlpha: 0,
+        scale: 0.58,
+        y: 0,
+        transformOrigin: "50% 50%",
+      });
+      gsap.set(line, {
+        autoAlpha: 0,
+        scaleY: 0,
+        transformOrigin: "center bottom",
+      });
+      gsap.set(title, { autoAlpha: 0, x: 22 });
+      gsap.set(body, { autoAlpha: 0, y: 18 });
+      gsap.set(lottieWrap, {
+        autoAlpha: 0,
+        scale: 0.98,
+        transformOrigin: "50% 50%",
+      });
 
-          const tl = gsap.timeline({
-            defaults: { ease: "power2.out" },
-          });
-
-          gsap.set(logo, {
-            autoAlpha: 0,
-            scale: 0.58,
-            y: 0,
-            transformOrigin: "50% 50%",
-            force3D: true,
-          });
-          gsap.set(line, {
-            autoAlpha: 0,
-            scaleY: 0,
-            transformOrigin: "center bottom",
-            force3D: true,
-          });
-          gsap.set(title, {
-            autoAlpha: 0,
-            x: 22,
-            force3D: true,
-          });
-          gsap.set(body, {
-            autoAlpha: 0,
-            y: 18,
-            force3D: true,
-          });
-          gsap.set(lottieWrap, {
-            autoAlpha: 0,
-            scale: 0.98,
-            transformOrigin: "50% 50%",
-            force3D: true,
-          });
-
-          tl.to(logo, {
+      tl.to(logo, {
+        autoAlpha: 1,
+        scale: 1,
+        duration: 0.9,
+        ease: "power3.out",
+      })
+        .to(
+          logo,
+          {
+            y: -200,
+            duration: 0.5,
+            ease: "power2.inOut",
+          },
+          ">-0.04",
+        )
+        .to(
+          line,
+          {
             autoAlpha: 1,
-            scale: 1,
-            duration: 0.92,
-            ease: "power2.out",
-            force3D: true,
-          })
-            .to({}, { duration: 0.08 })
-            .to(
-              logo,
-              {
-                y: -200,
-                duration: 0.52,
-                ease: "power2.inOut",
-                force3D: true,
-              },
-              "+=0.04",
-            )
-            .to(
-              line,
-              {
-                autoAlpha: 1,
-                scaleY: 1,
-                duration: 0.42,
-                force3D: true,
-              },
-              "-=0.22",
-            )
-            .to(
-              title,
-              {
-                autoAlpha: 1,
-                x: 0,
-                duration: 0.3,
-                ease: "power3.out",
-                force3D: true,
-              },
-              "-=0.2",
-            )
-            .to(
-              body,
-              {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.48,
-                ease: "power1.out",
-                force3D: true,
-              },
-              "-=0.16",
-            )
-            .to({}, { duration: 0.16 })
-            .to(
-              content,
-              {
-                autoAlpha: 0,
-                duration: 0.3,
-                ease: "power2.in",
-              },
-              "+=0.05",
-            )
-            .call(() => {
-              const a = animRef.current;
-              if (!a?.isLoaded) {
-                gsap.delayedCall(0.3, () => {
-                  const el = containerRef.current;
-                  if (!el) {
-                    onCompleteRef.current?.();
-                    return;
-                  }
-                  gsap.to(el, {
-                    autoAlpha: 0,
-                    duration: 0.32,
-                    ease: "power2.inOut",
-                    onComplete: () => onCompleteRef.current?.(),
-                  });
-                });
+            scaleY: 1,
+            duration: 0.42,
+          },
+          "<0.16",
+        )
+        .to(
+          title,
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: 0.34,
+            ease: "power3.out",
+          },
+          "<0.06",
+        )
+        .to(
+          body,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.42,
+            ease: "power1.out",
+          },
+          "<0.04",
+        )
+        .to(
+          content,
+          {
+            autoAlpha: 0,
+            duration: 0.28,
+            ease: "power2.inOut",
+          },
+          ">0.12",
+        )
+        .call(() => {
+          const a = animRef.current;
+          if (!a?.isLoaded) {
+            gsap.delayedCall(0.24, () => {
+              const el = containerRef.current;
+              if (!el) {
+                onCompleteRef.current?.();
                 return;
               }
-              a.setSpeed(LOTTIE_PLAYBACK_SPEED);
-              a.goToAndStop(0, true);
-              a.play();
-            })
-            .to(
-              lottieWrap,
-              {
-                autoAlpha: 1,
-                scale: 1,
-                duration: 0.36,
-                ease: "power2.out",
-                force3D: true,
-              },
-              "+=0.04",
-            )
-            .to({}, { duration: 0.12 });
-        }, containerRef);
-      });
-    });
+              gsap.to(el, {
+                autoAlpha: 0,
+                duration: 0.3,
+                ease: "power2.inOut",
+                onComplete: () => onCompleteRef.current?.(),
+              });
+            });
+            return;
+          }
+          a.setSpeed(LOTTIE_PLAYBACK_SPEED);
+          a.goToAndStop(0, true);
+          a.play();
+        })
+        .to(
+          lottieWrap,
+          {
+            autoAlpha: 1,
+            scale: 1,
+            duration: 0.34,
+            ease: "power2.out",
+          },
+          "<0.02",
+        );
+    }, containerRef);
 
     return () => {
-      disposed = true;
-      window.cancelAnimationFrame(outerRaf);
-      window.cancelAnimationFrame(innerRaf);
       gsapCtx?.revert();
     };
   }, [lottieReady, logoReady]);

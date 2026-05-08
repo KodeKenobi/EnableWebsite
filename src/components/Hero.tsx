@@ -226,6 +226,16 @@ function DotBurst({ className }: { className?: string }) {
 const Hero = ({ introDone, onRevealReady }: HeroProps) => {
   const [phase, setPhase] = useState<HeroRevealPhase>("idle");
 
+  const scrollToServices = () => {
+    const target = document.getElementById("solutions");
+    if (!target) return;
+    const isDesktopHeader = window.matchMedia("(min-width: 768px)").matches;
+    const headerOffset = isDesktopHeader ? 96 : 80;
+    const targetTop =
+      target.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+  };
+
   useEffect(() => {
     const root = document.documentElement;
     let rafId = 0;
@@ -393,7 +403,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
 
       <div className="relative z-10 grid min-h-screen w-full grid-cols-12 gap-x-6 px-6 pb-16 pt-28 md:gap-x-8 md:px-10 lg:px-16 lg:pt-32">
         <div
-          className="col-span-12 flex max-w-[82vw] flex-col justify-end pt-8 md:col-span-6 md:max-w-[50vw] md:justify-center md:pt-0 lg:col-span-6 lg:pr-4 xl:max-w-[750px]"
+          className="col-span-12 flex max-w-[82vw] flex-col items-center justify-center pt-0 text-center md:col-span-6 md:max-w-[50vw] md:items-start md:justify-center md:pt-0 md:text-left lg:col-span-6 lg:pr-4 xl:max-w-[750px]"
           style={{
             transform: "scale(var(--hero-text-scale, 1)) translateZ(0)",
             transformOrigin: "left center",
@@ -427,7 +437,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
           </ParagraphSlideText>
 
           <motion.div
-            className="-mt-2 flex flex-col gap-5 sm:-mt-4 sm:flex-row sm:items-center md:-mt-5"
+            className="-mt-2 flex flex-col items-center gap-5 sm:-mt-4 sm:flex-row sm:items-center md:-mt-5 md:items-start"
             initial="hide"
             animate={motionPhase}
             variants={heroCtasSlideVariants}
@@ -448,7 +458,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
             </a>
             <button
               type="button"
-              className="group type-button self-start inline-flex items-center justify-center rounded-full !bg-transparent px-6 py-2.5 text-[var(--color-fg-inverse)] transition-all duration-300 hover:!bg-[color-mix(in_srgb,var(--color-fg-inverse)_8%,transparent)]"
+              className="group type-button inline-flex items-center justify-center rounded-full !bg-transparent px-6 py-2.5 text-[var(--color-fg-inverse)] transition-all duration-300 hover:!bg-[color-mix(in_srgb,var(--color-fg-inverse)_8%,transparent)] md:self-start"
             >
               <HoverSlideText
                 text="Our products"
@@ -459,17 +469,22 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
         </div>
 
         <motion.div
-          className="col-span-12 mt-auto flex justify-start pb-2 md:absolute md:bottom-6 md:left-10 md:col-span-auto lg:bottom-10 lg:left-14"
+          className="col-span-12 mt-auto flex justify-center pb-2 md:absolute md:bottom-6 md:left-10 md:col-span-auto md:justify-start lg:bottom-10 lg:left-14"
           initial="hide"
           animate={motionPhase}
           variants={heroScrollVariants}
         >
-          <div className="flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={scrollToServices}
+            className="group flex flex-col items-center gap-2"
+            aria-label="Scroll to services"
+          >
             <div className="relative h-14 w-[1.5px] overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-fg-inverse)_15%,transparent)]">
               <div className="animate-beat-drop absolute left-0 top-0 h-1/2 w-full bg-[color-mix(in_srgb,var(--color-fg-inverse)_45%,transparent)]" />
             </div>
             <div
-              className="animate-heartbeat-circle flex h-11 w-11 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--color-fg-inverse)_24%,transparent)] text-[color-mix(in_srgb,var(--color-fg-inverse)_58%,transparent)]"
+              className="animate-heartbeat-circle flex h-11 w-11 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--color-fg-inverse)_24%,transparent)] text-[color-mix(in_srgb,var(--color-fg-inverse)_58%,transparent)] transition-colors duration-300 group-hover:border-[color-mix(in_srgb,var(--color-fg-inverse)_55%,transparent)] group-hover:text-[var(--color-fg-inverse)]"
               aria-hidden
             >
               <ChevronDown
@@ -477,7 +492,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
                 strokeWidth={1.5}
               />
             </div>
-          </div>
+          </button>
         </motion.div>
       </div>
     </section>

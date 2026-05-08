@@ -1,6 +1,9 @@
+import React, { useEffect } from "react";
+
 type CircularCardItem = {
   id: string;
   gradient: string;
+  lottieSrc: string;
 };
 
 interface CircularCardStackProps {
@@ -30,6 +33,17 @@ export default function CircularCardStack({
   cardClassName = "",
   containerClassName = "",
 }: CircularCardStackProps) {
+  useEffect(() => {
+    const scriptId = "dotlottie-player-script";
+    if (document.getElementById(scriptId)) return;
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.src =
+      "https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs";
+    script.type = "module";
+    document.head.appendChild(script);
+  }, []);
+
   if (!items.length) return null;
 
   return (
@@ -49,7 +63,7 @@ export default function CircularCardStack({
         return (
           <article
             key={item.id}
-            className={`absolute left-1/2 top-[8%] h-[clamp(190px,36vh,290px)] w-[min(54vw,520px)] rounded-sm border border-white/30 shadow-[0_16px_40px_rgba(0,0,0,.28)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${cardClassName}`}
+            className={`absolute left-1/2 top-[8%] h-[clamp(190px,36vh,290px)] w-[min(54vw,520px)] overflow-hidden rounded-sm border border-white/30 shadow-[0_16px_40px_rgba(0,0,0,.28)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [&>dotlottie-player]:block [&>dotlottie-player]:h-full [&>dotlottie-player]:w-full ${cardClassName}`}
             style={{
               transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) scale(${scale})`,
               zIndex,
@@ -57,7 +71,21 @@ export default function CircularCardStack({
               background: item.gradient,
             }}
             aria-hidden={relative !== 0}
-          />
+          >
+            {React.createElement("dotlottie-player", {
+              src: item.lottieSrc,
+              autoplay: true,
+              loop: true,
+              class: "h-full w-full",
+              style: {
+                width: "100%",
+                height: "100%",
+                display: "block",
+                objectFit: "contain",
+                objectPosition: "center",
+              },
+            })}
+          </article>
         );
       })}
 
