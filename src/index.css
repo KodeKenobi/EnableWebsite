@@ -187,6 +187,12 @@ html {
   text-align: left;
 }
 
+@media (max-width: 767px) {
+  .type-intro-title {
+    text-align: center;
+  }
+}
+
 .type-intro-body {
   color: var(--color-fg-inverse);
   font-family: var(--font-body-light);

@@ -225,6 +225,23 @@ function DotBurst({ className }: { className?: string }) {
 
 const Hero = ({ introDone, onRevealReady }: HeroProps) => {
   const [phase, setPhase] = useState<HeroRevealPhase>("idle");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  const heroCopyBase = isMobile ? HERO_COPY_BASE - 0.34 : HERO_COPY_BASE;
+  const copyStagger = isMobile ? 0.2 : COPY_STAGGER;
+  const textDuration = isMobile ? 1.08 : TEXT_SLIDE_DURATION;
+  const heroTitleDelay = heroCopyBase;
+  const heroBodyDelay = heroCopyBase + copyStagger;
+  const heroCtasDelay = heroCopyBase + copyStagger * 2;
+  const heroScrollDelay = heroCopyBase + copyStagger * 3;
 
   const scrollToServices = () => {
     const target = document.getElementById("solutions");
@@ -420,6 +437,11 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
               initial="hide"
               animate={motionPhase}
               variants={heroTitleSlideVariants}
+              transition={{
+                delay: heroTitleDelay,
+                duration: textDuration,
+                ease: paragraphEase,
+              }}
             >
               Digitalisation
             </motion.span>
@@ -430,6 +452,11 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
             initial="hide"
             animate={motionPhase}
             variants={heroParagraphSlideVariants}
+            transition={{
+              delay: heroBodyDelay,
+              duration: textDuration,
+              ease: paragraphEase,
+            }}
           >
             Digitalisation is a social and business phenomenon, powered by the
             technologies ET brings to bear—woven processes, systems, customers,
@@ -441,6 +468,11 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
             initial="hide"
             animate={motionPhase}
             variants={heroCtasSlideVariants}
+            transition={{
+              delay: heroCtasDelay,
+              duration: textDuration,
+              ease: paragraphEase,
+            }}
           >
             <a
               href="#solutions"
@@ -473,6 +505,11 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
           initial="hide"
           animate={motionPhase}
           variants={heroScrollVariants}
+          transition={{
+            delay: heroScrollDelay,
+            duration: textDuration,
+            ease: paragraphEase,
+          }}
         >
           <button
             type="button"

@@ -140,7 +140,7 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
         scaleY: 0,
         transformOrigin: "center bottom",
       });
-      gsap.set(title, { autoAlpha: 0, x: 22 });
+      gsap.set(title, { autoAlpha: 0, y: 20 });
       gsap.set(body, { autoAlpha: 0, y: 18 });
       gsap.set(lottieWrap, {
         autoAlpha: 0,
@@ -157,9 +157,9 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
         .to(
           logo,
           {
-            y: -200,
-            duration: 0.5,
-            ease: "power2.inOut",
+            y: -184,
+            duration: 0.56,
+            ease: "power3.inOut",
           },
           ">-0.04",
         )
@@ -176,7 +176,7 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
           title,
           {
             autoAlpha: 1,
-            x: 0,
+            y: 0,
             duration: 0.34,
             ease: "power3.out",
           },
@@ -276,19 +276,15 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
         </div>
 
         <div
-          className="absolute top-[58%] flex max-w-[calc(100vw-1.5rem)] flex-row items-stretch gap-14 pr-2"
-          style={{
-            color: "var(--color-fg-inverse)",
-            left: "50%",
-            transform: "translate(-0.5px, -50%)",
-          }}
+          className="absolute left-1/2 top-1/2 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+          style={{ color: "var(--color-fg-inverse)" }}
         >
           <div
             ref={lineRef}
-            className="invisible mt-4 w-px shrink-0 origin-bottom scale-y-0 self-stretch opacity-0"
+            className="invisible mt-5 h-20 w-px origin-top scale-y-0 opacity-0 md:h-24"
             style={{ background: "var(--color-fg-inverse)" }}
           />
-          <div className="relative flex min-w-0 max-w-[min(560px,calc(100vw-3rem))] flex-col items-start text-left">
+          <div className="relative mt-6 flex min-w-0 max-w-[min(560px,calc(100vw-3rem))] flex-col items-center text-center">
             <div
               ref={titleRef}
               className="type-intro-title invisible w-full opacity-0"

@@ -31,6 +31,9 @@ export default function ProductsSection() {
     <div id="our-products" className="relative isolate">
       {productSlides.map((slide, index) => {
         const textFirst = slide.textSide === "left";
+        const mobileTextAlign = textFirst
+          ? "items-start text-left mr-auto"
+          : "items-end text-right ml-auto";
         return (
           <section
             key={`${slide.title}-${index}`}
@@ -46,11 +49,11 @@ export default function ProductsSection() {
               <div
                 className={`${textFirst ? "md:order-1" : "md:order-2"} flex items-center bg-[#053346] px-5 sm:px-8 md:px-16 lg:px-24`}
               >
-                <div className="max-w-[30rem]">
+                <div className={`flex max-w-[30rem] flex-col ${mobileTextAlign} md:ml-0 md:mr-0 md:items-start md:text-left`}>
                   <h2 className="font-serif text-[clamp(2rem,3.8vw,4.1rem)] font-normal leading-[0.98] tracking-[0.01em] text-white">
                     {slide.title}
                   </h2>
-                  <ul className="mt-10 space-y-2 text-[clamp(0.95rem,1.05vw,1.2rem)] leading-[1.35] text-white/92">
+                  <ul className="mt-10 w-full space-y-2 text-[clamp(0.95rem,1.05vw,1.2rem)] leading-[1.35] text-white/92">
                     {slide.items.map((item) => (
                       <li key={item} className="font-serif">
                         {item}

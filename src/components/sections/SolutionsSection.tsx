@@ -20,7 +20,7 @@ export default function SolutionsSection() {
   return (
     <section
       ref={sectionRef}
-      className="pointer-events-auto relative z-20 min-h-[100svh] overflow-hidden bg-[#0a3042] text-[var(--color-fg-inverse)]"
+      className="pointer-events-auto relative z-20 min-h-[100svh] overflow-hidden bg-[#0a3042] text-[var(--color-fg-inverse)] md:h-screen"
     >
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -42,9 +42,9 @@ export default function SolutionsSection() {
         <div className="absolute left-1/2 top-0 h-2 w-28 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-[var(--color-accent-strong)]" />
       </motion.div>
 
-      <div className="relative z-[1] mx-auto flex min-h-[100svh] w-full max-w-[1400px] flex-col justify-between px-4 pb-12 pt-8 sm:px-6 md:px-10 md:pb-16 md:pt-20 lg:px-16 lg:pt-24">
+      <div className="relative z-[1] mx-auto flex min-h-[100svh] w-full max-w-[1400px] flex-col justify-between px-4 pb-10 pt-8 sm:px-6 md:h-full md:px-10 md:pb-16 md:pt-24 lg:px-16">
         <div className="text-center">
-          <h2 className="section-title-type mx-auto mt-3 max-w-[14ch] text-center text-white drop-shadow-[0_3px_16px_rgba(0,0,0,0.42)]">
+          <h2 className="section-title-type mx-auto mt-2 max-w-[14ch] text-center !text-[clamp(2rem,12vw,3.2rem)] text-white drop-shadow-[0_3px_16px_rgba(0,0,0,0.42)] md:mt-3 md:!text-[clamp(2.25rem,6.5vw,5.25rem)]">
             <LinesPullUp
               text="Solutions"
               className="section-title-type"
@@ -54,7 +54,7 @@ export default function SolutionsSection() {
               once={false}
             />
           </h2>
-          <div className="section-body-type mx-auto mt-6 max-w-5xl text-center text-white">
+          <div className="section-body-type mx-auto mt-4 max-w-5xl text-center !text-[clamp(1rem,4.6vw,1.2rem)] text-white md:mt-6 md:!text-[clamp(1.25rem,2vw,1.25rem)]">
             <LinesPullUp
               text="Our solutions range from: Server and Virtualization solutions, Software and Application solutions, Network and Security, License compliance and renewals, office supply, Printers and peripherals, Hardware and Software supply, Support and Project management in the vast and often intricate Information Technology Industry."
               className="section-body-type"
@@ -67,7 +67,7 @@ export default function SolutionsSection() {
 
           <SolutionsCards
             items={solutionItems}
-            className="mx-auto mt-10 w-full max-w-[1300px] md:mt-16"
+            className="mx-auto mt-8 w-full max-w-[1300px] md:mt-16"
           />
         </div>
       </div>
