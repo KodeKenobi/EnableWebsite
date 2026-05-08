@@ -10,6 +10,7 @@ import HoverSlideText from "./animations/textAnimations/HoverSlideText.tsx";
 
 interface HeroProps {
   introDone: boolean;
+  onRevealReady?: () => void;
 }
 
 type HeroRevealPhase = "idle" | "loading" | "playing";
@@ -222,7 +223,7 @@ function DotBurst({ className }: { className?: string }) {
   );
 }
 
-const Hero = ({ introDone }: HeroProps) => {
+const Hero = ({ introDone, onRevealReady }: HeroProps) => {
   const [phase, setPhase] = useState<HeroRevealPhase>("idle");
 
   useEffect(() => {
@@ -278,6 +279,12 @@ const Hero = ({ introDone }: HeroProps) => {
     }, HERO_LOADING_MS);
     return () => window.clearTimeout(t);
   }, [introDone]);
+
+  useEffect(() => {
+    if (phase === "playing") {
+      onRevealReady?.();
+    }
+  }, [phase, onRevealReady]);
 
   const motionPhase = phase === "playing" ? "show" : "hide";
   const showLoadingOverlay = introDone && phase === "loading";

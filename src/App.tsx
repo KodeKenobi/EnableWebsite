@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { AnimatePresence } from "framer-motion";
 import IntroLoader from "./components/IntroLoader.tsx";
 import Header from "./components/Header.tsx";
 import Hero from "./components/Hero.tsx";
@@ -10,26 +11,13 @@ import DisclaimersPage from "./disclaimers/DisclaimersPage.tsx";
 import { useAppRoute } from "./hooks/useAppRoute.ts";
 import "./App.css";
 
-const INTRO_SEEN_SESSION_KEY = "enable-intro-seen";
-
-function hasSeenIntroThisSession(): boolean {
-  try {
-    return globalThis.sessionStorage?.getItem(INTRO_SEEN_SESSION_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
 function App() {
-  const [introDone, setIntroDone] = useState(hasSeenIntroThisSession);
+  const [introDone, setIntroDone] = useState(false);
+  const [headerReady, setHeaderReady] = useState(false);
   const route = useAppRoute();
 
   const handleIntroComplete = useCallback(() => {
-    try {
-      globalThis.sessionStorage?.setItem(INTRO_SEEN_SESSION_KEY, "1");
-    } catch {
-      /* private mode / denied */
-    }
+    setHeaderReady(false);
     setIntroDone(true);
   }, []);
 
@@ -40,7 +28,12 @@ function App() {
   return (
     <main className="relative min-h-screen w-full bg-[var(--color-bg)]">
       <div className="fixed inset-0 z-0">
-        <Hero introDone={introDone} />
+        <Hero
+          introDone={introDone}
+          onRevealReady={() => {
+            setHeaderReady(true);
+          }}
+        />
       </div>
 
       <div className="relative z-20 pointer-events-none">
@@ -57,7 +50,9 @@ function App() {
         </div>
       </div>
 
-      {introDone && <Header />}
+      <AnimatePresence>
+        {headerReady ? <Header key="main-header" /> : null}
+      </AnimatePresence>
       {introDone && <CookiesModal />}
       {!introDone && <IntroLoader onComplete={handleIntroComplete} />}
     </main>
