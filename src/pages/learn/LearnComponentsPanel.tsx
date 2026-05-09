@@ -8,12 +8,11 @@ export default function LearnComponentsPanel() {
   if (!componentId || componentId === "all") {
     return (
       <div className="mx-auto w-full max-w-[min(1880px,calc(100vw-1.5rem))] md:max-w-[min(1880px,calc(100vw-9rem))]">
-        <header className="mb-10 border-b border-[var(--color-border)] pb-8">
-          <p className="type-kicker text-[var(--color-primary-blue)]">Components</p>
-          <h2 className="section-title-type mt-2 text-[var(--color-fg)]">
-            All live site sections
+        <header className="mb-12 border-b border-[var(--color-border)] pb-10">
+          <h2 className="font-sans text-[1.5rem] font-semibold tracking-[-0.02em] text-[var(--color-fg-strong)] md:text-[1.625rem]">
+            Components
           </h2>
-          <p className="section-body-type mt-3 max-w-2xl text-[var(--color-fg)]/80">
+          <p className="mt-4 max-w-[56ch] font-sans text-[1rem] leading-[1.75] text-[var(--color-fg)]/[0.78] md:text-[1.0625rem]">
             These are the main building blocks rendered on the marketing home
             route. Scroll each preview; heavier sections stay in a clipped frame
             so the hub stays fast to scroll.
@@ -30,16 +29,16 @@ export default function LearnComponentsPanel() {
             >
               <div className="mb-4 flex flex-wrap items-baseline justify-between gap-4">
                 <div>
-                  <h3 className="font-display text-2xl font-normal text-[var(--color-fg-strong)]">
+                  <h3 className="font-sans text-xl font-semibold tracking-[-0.015em] text-[var(--color-fg-strong)]">
                     {part.label}
                   </h3>
-                  <p className="mt-2 max-w-2xl text-sm text-[var(--color-fg)]/75">
+                  <p className="mt-2 max-w-[60ch] font-sans text-[0.9375rem] leading-relaxed text-[var(--color-fg)]/[0.72]">
                     {part.description}
                   </p>
                 </div>
                 <Link
                   to={`/learn/components/${part.id}`}
-                  className="type-nav shrink-0 text-[var(--color-primary-blue)] underline-offset-4 hover:underline"
+                  className="shrink-0 font-sans text-[0.875rem] font-medium text-[var(--color-primary-blue)] underline-offset-4 hover:underline"
                 >
                   Full-width view →
                 </Link>
@@ -75,16 +74,15 @@ export default function LearnComponentsPanel() {
     <div className="mx-auto w-full max-w-[min(1880px,calc(100vw-1.5rem))] md:max-w-[min(1880px,calc(100vw-9rem))]">
       <Link
         to="/learn/components/all"
-        className="type-nav text-[var(--color-primary-blue)] underline-offset-4 hover:underline"
+        className="font-sans text-[0.875rem] font-medium text-[var(--color-primary-blue)] underline-offset-4 hover:underline"
       >
         ← All components
       </Link>
-      <header className="mt-6 border-b border-[var(--color-border)] pb-8">
-        <p className="type-kicker text-[var(--color-primary-blue)]">{part.label}</p>
-        <h2 className="section-title-type mt-2 text-[var(--color-fg)]">
-          Full-width preview
+      <header className="mt-8 border-b border-[var(--color-border)] pb-10">
+        <h2 className="font-sans text-[1.5rem] font-semibold tracking-[-0.02em] text-[var(--color-fg-strong)] md:text-[1.625rem]">
+          {part.label}
         </h2>
-        <p className="section-body-type mt-3 max-w-2xl text-[var(--color-fg)]/80">
+        <p className="mt-4 max-w-[56ch] font-sans text-[1rem] leading-[1.75] text-[var(--color-fg)]/[0.78] md:text-[1.0625rem]">
           {part.description}
         </p>
       </header>

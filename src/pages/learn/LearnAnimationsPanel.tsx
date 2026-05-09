@@ -8,19 +8,16 @@ export default function LearnAnimationsPanel() {
 
   return (
     <div className="mx-auto w-full max-w-[min(1880px,calc(100vw-1.5rem))] md:max-w-[min(1880px,calc(100vw-9rem))]">
-      <header className="mb-8 border-b border-[var(--color-border)] pb-8">
-        <p className="type-kicker text-[var(--color-primary-blue)]">
-          Animations
-        </p>
-        <h2 className="section-title-type mt-2 text-[var(--color-fg)]">
-          {meta ? meta.componentName : "Preview"}
+      <header className="mb-11 border-b border-[var(--color-border)] pb-10">
+        <h2 className="font-sans text-[1.5rem] font-semibold tracking-[-0.02em] text-[var(--color-fg-strong)] md:text-[1.625rem]">
+          {meta ? meta.componentName : "Animations"}
         </h2>
         {meta ? (
-          <p className="section-body-type mt-3 font-mono text-sm text-[var(--color-fg)]/65">
+          <p className="mt-3 font-mono text-[0.8125rem] text-[var(--color-fg)]/[0.55]">
             {meta.category}/{meta.componentName}.tsx
           </p>
         ) : (
-          <p className="section-body-type mt-3 max-w-2xl text-[var(--color-fg)]/80">
+          <p className="mt-4 max-w-[56ch] font-sans text-[1rem] leading-[1.75] text-[var(--color-fg)]/[0.78] md:text-[1.0625rem]">
             Choose a module from the sidebar. Defaults render with zero props when
             possible; labelled overrides cover the headline treatments used on
             the site.
@@ -31,7 +28,7 @@ export default function LearnAnimationsPanel() {
       <LearnAnimationViewer slug={slug} />
 
       {!slug ? (
-        <p className="mt-10 text-center text-sm text-[var(--color-fg)]/65">
+        <p className="mt-12 text-center font-sans text-[0.875rem] text-[var(--color-fg)]/[0.55]">
           Tip: collapsed groups in the sidebar list every file under{" "}
           <code className="rounded bg-[var(--color-bg-muted)] px-1.5 py-0.5 text-xs">
             src/components/animations
@@ -39,7 +36,7 @@ export default function LearnAnimationsPanel() {
           .
         </p>
       ) : (
-        <p className="mt-10 text-xs text-[var(--color-fg)]/55">
+        <p className="mt-11 font-sans text-[0.8125rem] text-[var(--color-fg)]/50">
           <Link to="/learn/animations" className="underline">
             Clear selection
           </Link>

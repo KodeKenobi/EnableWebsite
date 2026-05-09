@@ -1,53 +1,87 @@
+import type { ReactNode } from "react";
 import type { Components } from "react-markdown";
+import {
+  handbookHeadingPlainText,
+  slugifyHandbookHeading,
+} from "../../learn/handbookDocUtils.ts";
 
-/** Shared markdown mapping: readable “course page” typography (not dashboard-grey). */
+function headingId(children: ReactNode) {
+  const plain = handbookHeadingPlainText(children);
+  return slugifyHandbookHeading(plain || "section");
+}
+
+/** Docs-style typography: site sans only, generous spacing, strong readability. */
 export const learnHandbookMarkdownComponents: Components = {
-  h1: ({ children, ...props }) => (
-    <h1
-      className="scroll-mt-32 font-display text-3xl font-normal tracking-tight text-[var(--color-fg-strong)] md:text-4xl"
-      {...props}
-    >
-      {children}
-    </h1>
-  ),
-  h2: ({ children, ...props }) => (
-    <h2
-      className="scroll-mt-28 mt-12 border-b border-[var(--color-border)] pb-3 font-display text-2xl font-normal text-[var(--color-fg-strong)] first:mt-0"
-      {...props}
-    >
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }) => (
-    <h3
-      className="mt-8 scroll-mt-28 font-display text-xl font-normal text-[var(--color-fg-strong)]"
-      {...props}
-    >
-      {children}
-    </h3>
-  ),
+  h1: ({ children, ...props }) => {
+    const id = headingId(children);
+    return (
+      <h1
+        id={id}
+        className="scroll-mt-36 mb-10 border-b border-[var(--color-border)] pb-6 font-sans text-[1.75rem] font-semibold leading-snug tracking-[-0.02em] text-[var(--color-fg-strong)] md:text-[2rem]"
+        {...props}
+      >
+        {children}
+      </h1>
+    );
+  },
+  h2: ({ children, ...props }) => {
+    const id = headingId(children);
+    return (
+      <h2
+        id={id}
+        className="scroll-mt-36 mt-[3rem] border-b border-[var(--color-border)] pb-3 font-sans text-[1.35rem] font-semibold leading-snug tracking-[-0.015em] text-[var(--color-fg-strong)] first:mt-0 md:text-[1.5rem]"
+        {...props}
+      >
+        {children}
+      </h2>
+    );
+  },
+  h3: ({ children, ...props }) => {
+    const id = headingId(children);
+    return (
+      <h3
+        id={id}
+        className="scroll-mt-36 mt-[2.25rem] font-sans text-[1.125rem] font-semibold leading-snug text-[var(--color-fg-strong)]"
+        {...props}
+      >
+        {children}
+      </h3>
+    );
+  },
   h4: ({ children, ...props }) => (
-    <h4 className="mt-6 font-sans text-base font-semibold text-[var(--color-fg)]" {...props}>
+    <h4
+      className="scroll-mt-36 mt-8 font-sans text-base font-semibold text-[var(--color-fg)]"
+      {...props}
+    >
       {children}
     </h4>
   ),
   p: ({ children, ...props }) => (
-    <p className="mt-4 text-[15px] leading-[1.75] text-[var(--color-fg)]/90" {...props}>
+    <p
+      className="mb-6 font-sans text-[1rem] leading-[1.82] text-[var(--color-fg)]/[0.88] md:text-[1.0625rem]"
+      {...props}
+    >
       {children}
     </p>
   ),
   ul: ({ children, ...props }) => (
-    <ul className="mt-4 list-disc space-y-2 pl-6 text-[15px] leading-relaxed text-[var(--color-fg)]/90" {...props}>
+    <ul
+      className="mb-8 list-disc space-y-3 pl-7 font-sans text-[1rem] leading-[1.82] text-[var(--color-fg)]/[0.88] md:text-[1.0625rem]"
+      {...props}
+    >
       {children}
     </ul>
   ),
   ol: ({ children, ...props }) => (
-    <ol className="mt-4 list-decimal space-y-2 pl-6 text-[15px] leading-relaxed text-[var(--color-fg)]/90" {...props}>
+    <ol
+      className="mb-8 list-decimal space-y-3 pl-7 font-sans text-[1rem] leading-[1.82] text-[var(--color-fg)]/[0.88] md:text-[1.0625rem]"
+      {...props}
+    >
       {children}
     </ol>
   ),
   li: ({ children, ...props }) => (
-    <li className="marker:text-[var(--color-primary-blue)]/80" {...props}>
+    <li className="ps-1 marker:text-[var(--color-primary-blue)]" {...props}>
       {children}
     </li>
   ),
@@ -59,7 +93,7 @@ export const learnHandbookMarkdownComponents: Components = {
   a: ({ href, children, ...props }) => (
     <a
       href={href}
-      className="font-medium text-[var(--color-primary-blue)] underline decoration-[var(--color-primary-blue)]/35 underline-offset-[3px] transition hover:decoration-[var(--color-primary-blue)]"
+      className="font-sans font-medium text-[var(--color-primary-blue)] underline decoration-[var(--color-primary-blue)]/30 underline-offset-[3px] transition hover:decoration-[var(--color-primary-blue)]"
       {...props}
     >
       {children}
@@ -76,7 +110,7 @@ export const learnHandbookMarkdownComponents: Components = {
     }
     return (
       <code
-        className="rounded-md bg-[var(--color-bg-muted)] px-1.5 py-0.5 font-mono text-[0.9em] text-[var(--color-fg-strong)]"
+        className="rounded px-1.5 py-0.5 font-mono text-[0.9em] text-[var(--color-fg-strong)] [background:_color-mix(in_srgb,var(--color-bg-muted)_88%,transparent)]"
         {...props}
       >
         {children}
@@ -85,7 +119,7 @@ export const learnHandbookMarkdownComponents: Components = {
   },
   pre: ({ children, ...props }) => (
     <pre
-      className="mt-4 overflow-x-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-fg-strong)]/95 p-4 text-sm text-[var(--color-fg-inverse)] shadow-inner"
+      className="mb-10 overflow-x-auto rounded-md border border-[var(--color-border)] bg-[#1e1e1e] p-5 font-mono text-[0.9375rem] leading-relaxed text-[#e6e8eb]"
       {...props}
     >
       {children}
@@ -93,24 +127,27 @@ export const learnHandbookMarkdownComponents: Components = {
   ),
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="mt-4 border-l-4 border-[var(--color-warm)] pl-5 italic text-[var(--color-fg)]/85"
+      className="mb-8 border-l-[3px] border-[var(--color-primary-blue)]/45 bg-[color-mix(in_srgb,var(--color-bg-muted)_35%,transparent)] px-5 py-4 font-sans text-[1rem] leading-[1.8] text-[var(--color-fg)]/[0.88]"
       {...props}
     >
       {children}
     </blockquote>
   ),
   hr: () => (
-    <hr className="my-12 border-0 border-t border-dashed border-[var(--color-border)]" />
+    <hr className="my-[3.25rem] border-0 border-t border-[var(--color-border)]" />
   ),
   table: ({ children, ...props }) => (
-    <div className="my-6 w-full overflow-x-auto rounded-xl border border-[var(--color-border)] bg-white/90 shadow-sm">
-      <table className="w-full min-w-[520px] border-collapse text-left text-sm" {...props}>
+    <div className="mb-10 w-full overflow-x-auto rounded-md border border-[var(--color-border)] bg-white">
+      <table
+        className="w-full min-w-[560px] border-collapse text-left font-sans text-[0.9375rem]"
+        {...props}
+      >
         {children}
       </table>
     </div>
   ),
   thead: ({ children, ...props }) => (
-    <thead className="bg-[var(--color-bg-muted)]/90 text-[var(--color-fg-strong)]" {...props}>
+    <thead className="bg-[color-mix(in_srgb,var(--color-bg-muted)_55%,white)] font-sans" {...props}>
       {children}
     </thead>
   ),
@@ -121,12 +158,15 @@ export const learnHandbookMarkdownComponents: Components = {
     </tr>
   ),
   th: ({ children, ...props }) => (
-    <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide" {...props}>
+    <th
+      className="px-4 py-3.5 align-bottom text-xs font-semibold uppercase tracking-wide text-[var(--color-fg-strong)]"
+      {...props}
+    >
       {children}
     </th>
   ),
   td: ({ children, ...props }) => (
-    <td className="px-4 py-3 text-[var(--color-fg)]/90" {...props}>
+    <td className="px-4 py-3.5 text-[var(--color-fg)]/[0.9]" {...props}>
       {children}
     </td>
   ),

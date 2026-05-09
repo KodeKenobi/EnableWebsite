@@ -302,11 +302,11 @@ Reuse utilities like `type-kicker`, `section-title-type`, `section-pad` from `in
 
 ## Learn (internal)
 
-Learning-portal style UI: top **tabs** for **Handbook** (this README rendered from `README.md` via `?raw`), **Components**, and **Animations**. Handbook is full-width; the other two use a sidebar.
+Documentation-style layout: **persistent left navigation** (outline + components + animations) and a **white content column** on the right, similar to GitHub Docs / Microsoft Learn. The README is rendered from **`README.md?raw`** at build time (`src/learn/handbookMarkdownSource.ts`); heading IDs power the “In this article” outline.
 
-Live section previews + glob-discovered animation modules for design/dev alignment.
+Live section previews + glob-discovered animation modules for design/engineering alignment.
 
-- Handbook: `src/pages/learn/LearnHandbookPanel.tsx` imports root `README.md`.
+- Handbook: `src/pages/learn/LearnHandbookPanel.tsx` + `src/pages/learn/learnHandbookMarkdown.tsx`; outline: `getHandbookToc()` in `src/learn/handbookDocUtils.ts`.
 - Components: `SITE_PARTS` in `src/learn/siteComponentsRegistry.tsx`.
 - Animations: every `*.tsx` under `src/components/animations/**` (except non-component files—follow existing patterns).
 
