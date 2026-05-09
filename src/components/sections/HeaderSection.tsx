@@ -10,6 +10,8 @@ const MotionLink = motion(Link);
 const HeaderSection = () => {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
+  /** Learn behaves like a separate portal — full reload when crossing in or out resets home state / scroll locks. */
+  const isLearn = pathname.startsWith("/learn");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -68,7 +70,12 @@ const HeaderSection = () => {
               />
             </a>
           ) : (
-            <Link to="/" className="block" onClick={closeMobileMenu}>
+            <Link
+              to="/"
+              reloadDocument={isLearn}
+              className="block"
+              onClick={closeMobileMenu}
+            >
               <img
                 src="/images/logo/et-logo.png"
                 alt="ET Logo"
@@ -85,6 +92,7 @@ const HeaderSection = () => {
             <MotionLink
               key={label}
               to={href}
+              reloadDocument={isLearn}
               className="hover-underline group relative block text-[var(--color-fg)]"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -107,9 +115,36 @@ const HeaderSection = () => {
               </span>
             </MotionLink>
           ))}
+          {!isLearn ? (
+            <MotionLink
+              to="/learn/handbook"
+              reloadDocument
+              className="hover-underline group relative block text-[var(--color-fg)]"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.32 + navItems.length * 0.04,
+                duration: 0.35,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <span className="relative block overflow-hidden">
+                <span className="text-lg font-semibold inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
+                  Learn
+                </span>
+                <span
+                  className="text-[var(--color-primary-blue)] text-lg font-semibold absolute left-0 top-0 inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0"
+                  aria-hidden="true"
+                >
+                  Learn
+                </span>
+              </span>
+            </MotionLink>
+          ) : null}
         </nav>
         <MotionLink
           to="/#contact"
+          reloadDocument={isLearn}
           className="group type-button hidden shrink-0 md:inline-flex items-center justify-center rounded-tr-full rounded-br-lg bg-[var(--color-fg-strong)] px-4 py-2 text-[var(--color-fg-inverse)] transition-opacity hover:bg-[var(--color-primary-blue)] hover:opacity-90 sm:px-5 sm:py-2.5 md:px-7 md:py-4"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -185,6 +220,7 @@ const HeaderSection = () => {
                   <MotionLink
                     key={label}
                     to={href}
+                    reloadDocument={isLearn}
                     onClick={closeMobileMenu}
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -200,14 +236,36 @@ const HeaderSection = () => {
                     </span>
                   </MotionLink>
                 ))}
+                {!isLearn ? (
+                  <MotionLink
+                    to="/learn/handbook"
+                    reloadDocument
+                    onClick={closeMobileMenu}
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.08 + navItems.length * 0.07,
+                      duration: 0.42,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="group flex items-center justify-center px-0 py-3 text-white/92 transition-colors hover:text-white"
+                  >
+                    <span className="text-[1.05rem] font-semibold tracking-[0.08em] uppercase">
+                      Learn
+                    </span>
+                  </MotionLink>
+                ) : null}
               </nav>
               <MotionLink
                 to="/#contact"
+                reloadDocument={isLearn}
                 onClick={closeMobileMenu}
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  delay: 0.16 + navItems.length * 0.07,
+                  delay:
+                    0.16 +
+                    (navItems.length + (!isLearn ? 1 : 0)) * 0.07,
                   duration: 0.42,
                   ease: [0.16, 1, 0.3, 1],
                 }}

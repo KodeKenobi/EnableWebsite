@@ -63,6 +63,7 @@ export default function LearnSidebar() {
         </p>
         <Link
           to="/"
+          reloadDocument
           className="type-nav mt-4 inline-flex text-[var(--color-primary-blue)] underline-offset-4 hover:underline"
         >
           ← Site home
