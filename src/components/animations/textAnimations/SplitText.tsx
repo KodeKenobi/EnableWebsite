@@ -37,7 +37,7 @@ const SplitText: React.FC<SplitTextProps> = ({
   textAlign = "center",
   onLetterAnimationComplete,
 }) => {
-  const ref = useRef<HTMLParagraphElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const animationCompletedRef = useRef(false);
   const onCompleteRef = useRef(onLetterAnimationComplete);
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
@@ -167,13 +167,8 @@ const SplitText: React.FC<SplitTextProps> = ({
       willChange: "transform, opacity",
     };
     const classes = `split-parent overflow-hidden inline-block whitespace-normal ${className}`;
-    const Tag = (tag || "p") as React.ElementType;
-
-    return (
-      <Tag ref={ref} style={style} className={classes}>
-        {text}
-      </Tag>
-    );
+    const TagName = (tag || "p") as keyof JSX.IntrinsicElements;
+    return React.createElement(TagName, { ref, style, className: classes }, text);
   };
 
   return renderTag();

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { navItems } from "../../constants/headerNav.ts";
@@ -10,7 +10,7 @@ const MotionLink = motion(Link);
 const HeaderSection = () => {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
-  /** Learn behaves like a separate portal — full reload when crossing in or out resets home state / scroll locks. */
+  /** `/learn/*` is not linked in this header but remains routable (see `App.tsx`); full reload preserves scroll locks when leaving Learn. */
   const isLearn = pathname.startsWith("/learn");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -115,32 +115,6 @@ const HeaderSection = () => {
               </span>
             </MotionLink>
           ))}
-          {!isLearn ? (
-            <MotionLink
-              to="/learn/handbook"
-              reloadDocument
-              className="hover-underline group relative block text-[var(--color-fg)]"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 0.32 + navItems.length * 0.04,
-                duration: 0.35,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-            >
-              <span className="relative block overflow-hidden">
-                <span className="text-lg font-semibold inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[100%]">
-                  Learn
-                </span>
-                <span
-                  className="text-[var(--color-primary-blue)] text-lg font-semibold absolute left-0 top-0 inline-block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] -translate-y-[100%] group-hover:translate-y-0"
-                  aria-hidden="true"
-                >
-                  Learn
-                </span>
-              </span>
-            </MotionLink>
-          ) : null}
         </nav>
         <MotionLink
           to="/#contact"
@@ -236,25 +210,6 @@ const HeaderSection = () => {
                     </span>
                   </MotionLink>
                 ))}
-                {!isLearn ? (
-                  <MotionLink
-                    to="/learn/handbook"
-                    reloadDocument
-                    onClick={closeMobileMenu}
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: 0.08 + navItems.length * 0.07,
-                      duration: 0.42,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    className="group flex items-center justify-center px-0 py-3 text-white/92 transition-colors hover:text-white"
-                  >
-                    <span className="text-[1.05rem] font-semibold tracking-[0.08em] uppercase">
-                      Learn
-                    </span>
-                  </MotionLink>
-                ) : null}
               </nav>
               <MotionLink
                 to="/#contact"
@@ -263,9 +218,7 @@ const HeaderSection = () => {
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  delay:
-                    0.16 +
-                    (navItems.length + (!isLearn ? 1 : 0)) * 0.07,
+                  delay: 0.16 + navItems.length * 0.07,
                   duration: 0.42,
                   ease: [0.16, 1, 0.3, 1],
                 }}
