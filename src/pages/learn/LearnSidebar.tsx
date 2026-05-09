@@ -42,6 +42,11 @@ export default function LearnSidebar() {
   const animations = getLearnAnimations();
   const buckets = groupedAnimationCategories(animations);
   const toc = useMemo(() => getHandbookToc(), []);
+  const [handbookOpen, setHandbookOpen] = useState(() =>
+    pathname === "/learn/handbook" ||
+    pathname === "/learn" ||
+    pathname.endsWith("/learn/"),
+  );
   const [componentsOpen, setComponentsOpen] = useState(() =>
     pathname.startsWith("/learn/components"),
   );
@@ -50,9 +55,10 @@ export default function LearnSidebar() {
   );
 
   useEffect(() => {
+    if (isHandbook) setHandbookOpen(true);
     if (pathname.startsWith("/learn/components")) setComponentsOpen(true);
     if (pathname.startsWith("/learn/animations")) setAnimationsOpen(true);
-  }, [pathname]);
+  }, [pathname, isHandbook]);
 
   return (
     <aside className="flex max-h-[min(48vh,calc(100svh-5.5rem))] w-full shrink-0 flex-col overflow-hidden border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-muted)_38%,white)] md:max-h-none md:h-[calc(100svh-5rem)] md:min-h-0 md:w-[296px] md:border-r md:border-b-0 lg:h-[calc(100svh-6.75rem)]">
@@ -75,33 +81,53 @@ export default function LearnSidebar() {
 
       <nav className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-3 py-5 md:px-4 md:py-7">
         <DocSectionTitle>On this portal</DocSectionTitle>
-        <NavLink
-          end
-          to="/learn/handbook"
-          className={({ isActive }) => railHeadingClass(isActive || isHandbook)}
-        >
-          Handbook
-        </NavLink>
-
-        {isHandbook ? (
-          <div className="mt-4 max-h-[min(280px,40vh)] overflow-y-auto border-t border-[var(--color-border)]/70 pt-4 md:max-h-[min(440px,calc(100vh-26rem))]">
-            <p className="mb-3 px-[10px] font-sans text-[0.75rem] font-medium text-[var(--color-fg)]/48">
-              In this article
-            </p>
-            <ul className="space-y-0.5">
-              {toc.map((item) => (
-                <li key={`${item.id}-${item.level}-${item.text}`}>
-                  <a
-                    href={`/learn/handbook#${encodeURIComponent(item.id)}`}
-                    className={tocItemClass(item.level === 3)}
-                  >
-                    {item.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+        <div className="space-y-1">
+          <button
+            type="button"
+            aria-expanded={handbookOpen}
+            onClick={() => setHandbookOpen((v) => !v)}
+            className="flex w-full items-center justify-between gap-2 rounded-[4px] py-2 pl-[10px] pr-2 text-left font-sans text-[0.8125rem] font-semibold text-[var(--color-fg)]/65 hover:bg-white/65"
+          >
+            Handbook
+            <ChevronDown
+              className={`size-3.5 shrink-0 transition-transform ${handbookOpen ? "rotate-180" : ""}`}
+              strokeWidth={2}
+              aria-hidden
+            />
+          </button>
+          {handbookOpen ? (
+            <div className="pb-2">
+              <NavLink
+                end
+                to="/learn/handbook"
+                className={({ isActive }) =>
+                  railHeadingClass(isActive || isHandbook)
+                }
+              >
+                Read handbook
+              </NavLink>
+              {isHandbook ? (
+                <div className="mt-3 max-h-[min(280px,40vh)] overflow-y-auto border-t border-[var(--color-border)]/70 pt-3 md:max-h-[min(440px,calc(100vh-26rem))]">
+                  <p className="mb-3 px-[10px] font-sans text-[0.75rem] font-medium text-[var(--color-fg)]/48">
+                    In this article
+                  </p>
+                  <ul className="space-y-0.5">
+                    {toc.map((item) => (
+                      <li key={`${item.id}-${item.level}-${item.text}`}>
+                        <a
+                          href={`/learn/handbook#${encodeURIComponent(item.id)}`}
+                          className={tocItemClass(item.level === 3)}
+                        >
+                          {item.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
 
         <DocSectionTitle>Live previews</DocSectionTitle>
         <div className="space-y-1">

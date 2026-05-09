@@ -11,7 +11,9 @@ export default function LearnHandbookPanel() {
         <code className="rounded px-1.5 py-0.5 font-mono text-[0.8125rem] text-[var(--color-fg-strong)] [background:_color-mix(in_srgb,var(--color-bg-muted)_75%,transparent)]">
           README.md
         </code>{" "}
-        at build time. Use the outline in the left nav to jump to sections.
+        — it is bundled when the app builds, so any teammate’s README edit is
+        reflected after the next deploy (or dev server refresh / HMR). Use the
+        outline in the left nav to jump to sections.
       </p>
 
       <article className="w-full max-w-none [&_p+p]:mt-0">
