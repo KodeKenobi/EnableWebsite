@@ -20,7 +20,7 @@ export default function ServicesSection() {
     const computeTargetProgress = () => {
       const rect = sectionEl.getBoundingClientRect();
       const vh = Math.max(window.innerHeight, 1);
-      const travelFactor = isMobile ? 0.48 : 0.85;
+      const travelFactor = isMobile ? 0.48 : 0.64;
       const raw = (vh - rect.top) / (vh * travelFactor);
       const clamped = Math.min(Math.max(raw, 0), 1);
       if (!isMobile) return clamped;
@@ -29,7 +29,7 @@ export default function ServicesSection() {
     };
 
     const tick = () => {
-      const smoothing = isMobile ? 0.38 : 0.16;
+      const smoothing = isMobile ? 0.38 : 0.44;
       current += (target - current) * smoothing;
       sectionEl.style.setProperty(
         "--services-copy-progress",
@@ -101,6 +101,7 @@ export default function ServicesSection() {
               yStartRem={1}
               startScale={0.94}
               endScale={1.05}
+              opacityFloor={0.36}
             >
               At Enable Technologies we get to know your business and then
               together assess where technology can optimize or improve your

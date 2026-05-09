@@ -70,7 +70,7 @@ export function LinesPullUp({
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: duration, ease: "easeOut" },
+      transition: { duration, ease: "easeOut" as const },
     },
   };
 

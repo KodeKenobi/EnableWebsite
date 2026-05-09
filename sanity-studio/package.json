@@ -1,0 +1,25 @@
+{
+  "name": "sanity-studio",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "create-sanity": "^5.2.16"
+  },
+  "dependencies": {
+    "@sanity/vision": "^5.24.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "sanity": "^5.24.0",
+    "styled-components": "^6.4.1"
+  }
+}

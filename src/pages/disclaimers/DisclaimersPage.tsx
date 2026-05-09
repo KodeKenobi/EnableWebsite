@@ -1,13 +1,15 @@
+import { Link } from "react-router-dom";
+
 export default function DisclaimersPage() {
   return (
     <main className="min-h-screen bg-[var(--color-fg-strong)] px-6 py-16 text-[var(--color-fg-inverse)] md:px-10 lg:px-16">
       <div className="mx-auto max-w-4xl">
-        <a
-          href="/"
+        <Link
+          to="/"
           className="inline-flex items-center text-sm text-[color-mix(in_srgb,var(--color-fg-inverse)_78%,transparent)] hover:text-[var(--color-fg-inverse)]"
         >
           ← Back to home
-        </a>
+        </Link>
 
         <h1
           className="mt-6 text-4xl leading-tight md:text-5xl"

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import FloatingLines from "./animations/backgrounds/FloatingLines.tsx";
+import FloatingLines from "../animations/backgrounds/FloatingLines.tsx";
 import {
   ParagraphSlideText,
   paragraphSlideVariants,
-} from "./animations/textAnimations/ParagraphSlideText.tsx";
-import HoverSlideText from "./animations/textAnimations/HoverSlideText.tsx";
+} from "../animations/textAnimations/ParagraphSlideText.tsx";
+import HoverSlideText from "../animations/textAnimations/HoverSlideText.tsx";
 
 interface HeroProps {
   introDone: boolean;
@@ -168,10 +168,15 @@ function clamp01(value: number): number {
   return Math.min(Math.max(value, 0), 1);
 }
 
-function setHeroTextVars(root: HTMLElement, progress: number): void {
+function setHeroTextVars(
+  root: HTMLElement,
+  progress: number,
+  desktop: boolean,
+): void {
   const clamped = clamp01(progress);
-  const scale = 1 - clamped * 0.11;
-  const opacity = Math.max(0, 1 - clamped * 1.35);
+  const scale = 1 - clamped * (desktop ? 0.08 : 0.11);
+  const fade = desktop ? 0.82 : 1.35;
+  const opacity = Math.max(desktop ? 0.22 : 0, 1 - clamped * fade);
   root.style.setProperty("--hero-text-progress", clamped.toFixed(4));
   root.style.setProperty("--hero-text-scale", scale.toFixed(4));
   root.style.setProperty("--hero-text-opacity", opacity.toFixed(4));
@@ -258,21 +263,27 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
     let rafId = 0;
     let current = 0;
     let target = 0;
+    const mq = window.matchMedia("(min-width: 768px)");
+
+    const isDesktop = () => mq.matches;
 
     const computeTargetProgress = () => {
       const vh = Math.max(window.innerHeight, 1);
-      return clamp01(window.scrollY / (vh * 0.6));
+      const denom = isDesktop() ? vh * 0.36 : vh * 0.6;
+      return clamp01(window.scrollY / denom);
     };
 
     const tick = () => {
-      current += (target - current) * 0.18;
-      setHeroTextVars(root, current);
+      const desktop = isDesktop();
+      const k = desktop ? 0.36 : 0.2;
+      current += (target - current) * k;
+      setHeroTextVars(root, current, desktop);
 
       if (Math.abs(target - current) > 0.001) {
         rafId = window.requestAnimationFrame(tick);
       } else {
         current = target;
-        setHeroTextVars(root, current);
+        setHeroTextVars(root, current, desktop);
         rafId = 0;
       }
     };
@@ -284,14 +295,16 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
 
     target = computeTargetProgress();
     current = target;
-    setHeroTextVars(root, current);
+    setHeroTextVars(root, current, isDesktop());
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    mq.addEventListener("change", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      mq.removeEventListener("change", onScroll);
       if (rafId) window.cancelAnimationFrame(rafId);
-      setHeroTextVars(root, 0);
+      setHeroTextVars(root, 0, mq.matches);
     };
   }, []);
 
@@ -464,7 +477,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
           </ParagraphSlideText>
 
           <motion.div
-            className="-mt-2 flex flex-col items-center gap-5 sm:-mt-4 sm:flex-row sm:items-center md:-mt-5 md:items-start"
+            className="-mt-2 flex flex-row flex-wrap items-center justify-center gap-x-6 gap-y-3 max-md:gap-x-4 sm:-mt-4 md:-mt-5 md:flex-nowrap md:items-center md:justify-start md:gap-x-8"
             initial="hide"
             animate={motionPhase}
             variants={heroCtasSlideVariants}
@@ -490,7 +503,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
             </a>
             <button
               type="button"
-              className="group type-button inline-flex items-center justify-center rounded-full !bg-transparent px-6 py-2.5 text-[var(--color-fg-inverse)] transition-all duration-300 hover:!bg-[color-mix(in_srgb,var(--color-fg-inverse)_8%,transparent)] md:self-start"
+              className="group type-button inline-flex items-center justify-center rounded-full !bg-transparent px-6 py-2.5 text-[var(--color-fg-inverse)] transition-all duration-300 hover:!bg-[color-mix(in_srgb,var(--color-fg-inverse)_8%,transparent)]"
             >
               <HoverSlideText
                 text="Our products"

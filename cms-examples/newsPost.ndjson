@@ -1,0 +1,22 @@
+{
+  "_type": "newsPost",
+  "_id": "newsPost-first",
+  "title": "First article",
+  "slug": {
+    "_type": "slug",
+    "current": "first-article"
+  },
+  "publishedAt": "2026-05-09T08:00:00.000Z",
+  "excerpt": "My first CMS article",
+  "body": [
+    {
+      "_type": "block",
+      "children": [
+        {
+          "_type": "span",
+          "text": "This is the first article."
+        }
+      ]
+    }
+  ]
+}

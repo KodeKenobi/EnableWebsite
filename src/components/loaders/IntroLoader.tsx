@@ -122,117 +122,144 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
       const content = contentRef.current;
       if (!logo || !line || !title || !body || !lottieWrap || !content) return;
 
-      const tl = gsap.timeline({
-        defaults: { ease: "power2.out", force3D: true },
-      });
+      const mm = gsap.matchMedia();
 
-      gsap.set([logo, line, title, body, lottieWrap], {
-        willChange: "transform, opacity",
-      });
-      gsap.set(logo, {
-        autoAlpha: 0,
-        scale: 0.58,
-        y: 0,
-        transformOrigin: "50% 50%",
-      });
-      gsap.set(line, {
-        autoAlpha: 0,
-        scaleY: 0,
-        transformOrigin: "center bottom",
-      });
-      gsap.set(title, { autoAlpha: 0, y: 20 });
-      gsap.set(body, { autoAlpha: 0, y: 18 });
-      gsap.set(lottieWrap, {
-        autoAlpha: 0,
-        scale: 0.98,
-        transformOrigin: "50% 50%",
-      });
+      /** Desktop: horizontal title reveal + row/line choreography; mobile: vertically stacked centered copy. */
+      const buildTimeline = (isMobile: boolean) => {
+        const tl = gsap.timeline({
+          defaults: { ease: "power2.out", force3D: true },
+        });
 
-      tl.to(logo, {
-        autoAlpha: 1,
-        scale: 1,
-        duration: 0.9,
-        ease: "power3.out",
-      })
-        .to(
-          logo,
-          {
-            y: -184,
-            duration: 0.56,
-            ease: "power3.inOut",
-          },
-          ">-0.04",
-        )
-        .to(
-          line,
-          {
-            autoAlpha: 1,
-            scaleY: 1,
-            duration: 0.42,
-          },
-          "<0.16",
-        )
-        .to(
-          title,
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.34,
-            ease: "power3.out",
-          },
-          "<0.06",
-        )
-        .to(
-          body,
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.42,
-            ease: "power1.out",
-          },
-          "<0.04",
-        )
-        .to(
-          content,
-          {
-            autoAlpha: 0,
-            duration: 0.28,
-            ease: "power2.inOut",
-          },
-          ">0.12",
-        )
-        .call(() => {
-          const a = animRef.current;
-          if (!a?.isLoaded) {
-            gsap.delayedCall(0.24, () => {
-              const el = containerRef.current;
-              if (!el) {
-                onCompleteRef.current?.();
-                return;
-              }
-              gsap.to(el, {
-                autoAlpha: 0,
-                duration: 0.3,
-                ease: "power2.inOut",
-                onComplete: () => onCompleteRef.current?.(),
-              });
-            });
-            return;
-          }
-          a.setSpeed(LOTTIE_PLAYBACK_SPEED);
-          a.goToAndStop(0, true);
-          a.play();
+        gsap.set([logo, line, title, body, lottieWrap], {
+          willChange: "transform, opacity",
+        });
+        gsap.set(logo, {
+          autoAlpha: 0,
+          scale: 0.58,
+          y: 0,
+          transformOrigin: "50% 50%",
+        });
+        gsap.set(line, {
+          autoAlpha: 0,
+          scaleY: 0,
+          transformOrigin: isMobile ? "center top" : "center bottom",
+        });
+        gsap.set(title, {
+          autoAlpha: 0,
+          x: isMobile ? 0 : 22,
+          y: isMobile ? 20 : 0,
+        });
+        gsap.set(body, { autoAlpha: 0, y: 18 });
+        gsap.set(lottieWrap, {
+          autoAlpha: 0,
+          scale: 0.98,
+          transformOrigin: "50% 50%",
+        });
+
+        tl.to(logo, {
+          autoAlpha: 1,
+          scale: 1,
+          duration: 0.9,
+          ease: "power3.out",
         })
-        .to(
-          lottieWrap,
-          {
-            autoAlpha: 1,
-            scale: 1,
-            duration: 0.34,
-            ease: "power2.out",
-          },
-          "<0.02",
-        );
+          .to(
+            logo,
+            {
+              y: isMobile ? -184 : -200,
+              duration: isMobile ? 0.56 : 0.5,
+              ease: isMobile ? "power3.inOut" : "power2.inOut",
+            },
+            ">-0.04",
+          )
+          .to(
+            line,
+            {
+              autoAlpha: 1,
+              scaleY: 1,
+              duration: 0.42,
+            },
+            "<0.16",
+          )
+          .to(
+            title,
+            isMobile
+              ? {
+                  autoAlpha: 1,
+                  y: 0,
+                  duration: 0.34,
+                  ease: "power3.out",
+                }
+              : {
+                  autoAlpha: 1,
+                  x: 0,
+                  duration: 0.34,
+                  ease: "power3.out",
+                },
+            "<0.06",
+          )
+          .to(
+            body,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.42,
+              ease: "power1.out",
+            },
+            "<0.04",
+          )
+          .to(
+            content,
+            {
+              autoAlpha: 0,
+              duration: 0.28,
+              ease: "power2.inOut",
+            },
+            ">0.12",
+          )
+          .call(() => {
+            const a = animRef.current;
+            if (!a?.isLoaded) {
+              gsap.delayedCall(0.24, () => {
+                const el = containerRef.current;
+                if (!el) {
+                  onCompleteRef.current?.();
+                  return;
+                }
+                gsap.to(el, {
+                  autoAlpha: 0,
+                  duration: 0.3,
+                  ease: "power2.inOut",
+                  onComplete: () => onCompleteRef.current?.(),
+                });
+              });
+              return;
+            }
+            a.setSpeed(LOTTIE_PLAYBACK_SPEED);
+            a.goToAndStop(0, true);
+            a.play();
+          })
+          .to(
+            lottieWrap,
+            {
+              autoAlpha: 1,
+              scale: 1,
+              duration: 0.34,
+              ease: "power2.out",
+            },
+            "<0.02",
+          );
+
+        return tl;
+      };
+
+      mm.add("(min-width: 768px)", () => {
+        const tl = buildTimeline(false);
+        return () => tl.kill();
+      });
+      mm.add("(max-width: 767px)", () => {
+        const tl = buildTimeline(true);
+        return () => tl.kill();
+      });
     }, containerRef);
 
     return () => {
@@ -276,15 +303,15 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
         </div>
 
         <div
-          className="absolute left-1/2 top-1/2 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+          className="absolute left-1/2 top-1/2 flex max-w-[calc(100vw-1.5rem)] -translate-x-1/2 -translate-y-1/2 flex-col items-center md:top-[58%] md:translate-none md:flex-row md:items-stretch md:gap-14 md:pr-2 md:[transform:translate(calc(-50%-0.5px),-50%)]"
           style={{ color: "var(--color-fg-inverse)" }}
         >
           <div
             ref={lineRef}
-            className="invisible mt-5 h-20 w-px origin-top scale-y-0 opacity-0 md:h-24"
+            className="invisible mt-5 h-20 w-px shrink-0 origin-top scale-y-0 opacity-0 md:mt-4 md:h-auto md:min-h-0 md:w-px md:flex-none md:origin-bottom md:self-stretch"
             style={{ background: "var(--color-fg-inverse)" }}
           />
-          <div className="relative mt-6 flex min-w-0 max-w-[min(560px,calc(100vw-3rem))] flex-col items-center text-center">
+          <div className="relative mt-6 flex min-w-0 max-w-[min(560px,calc(100vw-3rem))] flex-col items-center text-center md:mt-0 md:items-start md:text-left">
             <div
               ref={titleRef}
               className="type-intro-title invisible w-full opacity-0"

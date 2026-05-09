@@ -90,6 +90,7 @@ html {
 #solutions,
 #our-solutions,
 #our-products,
+#news,
 #contact {
   scroll-margin-top: 5rem;
 }
@@ -99,6 +100,7 @@ html {
   #solutions,
   #our-solutions,
   #our-products,
+  #news,
   #contact {
     scroll-margin-top: 6rem;
   }
@@ -504,4 +506,9 @@ h4 {
   html {
     @apply font-sans;
   }
+}
+
+/* Learn /learn: ASCIIText injects `background-attachment: fixed` — without this, the gradient can paint across the whole viewport. */
+.learn-animation-scope .ascii-text-container pre {
+  background-attachment: scroll !important;
 }

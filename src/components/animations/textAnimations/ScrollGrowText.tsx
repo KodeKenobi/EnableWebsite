@@ -10,6 +10,8 @@ interface ScrollGrowTextProps {
   yStartRem?: number;
   startScale?: number;
   endScale?: number;
+  /** Default 0.14 — bumped on Services desktop so headlines do not linger dim. */
+  opacityFloor?: number;
 }
 
 /**
@@ -27,6 +29,7 @@ export default function ScrollGrowText({
   yStartRem = 0.9,
   startScale = 0.92,
   endScale = 1.06,
+  opacityFloor = 0.14,
 }: ScrollGrowTextProps) {
   const signedX = from === "left" ? -Math.abs(xStartRem) : Math.abs(xStartRem);
   const xOffset =
@@ -35,11 +38,12 @@ export default function ScrollGrowText({
     motionAxis === "y" || motionAxis === "both" ? `${yStartRem}rem` : "0rem";
   const scaleDelta = endScale - startScale;
 
+  const opacitySpread = 1 - opacityFloor;
   const style = {
     transform: `translate3d(calc((1 - var(${progressVar}, 0)) * ${xOffset}), calc((1 - var(${progressVar}, 0)) * ${yOffset}), 0) scale(calc(${startScale} + var(${progressVar}, 0) * ${scaleDelta}))`,
     transformOrigin: "center center",
     willChange: "transform, opacity",
-    opacity: `calc(0.14 + var(${progressVar}, 0) * 0.86)`,
+    opacity: `calc(${opacityFloor} + var(${progressVar}, 0) * ${opacitySpread})`,
   } satisfies CSSProperties;
 
   return (

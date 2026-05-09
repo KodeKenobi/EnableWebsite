@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { navItems } from "../constants/headerNav.ts";
+import { Link, useLocation } from "react-router-dom";
+import { navItems } from "../../constants/headerNav.ts";
 
 const MOBILE_NAV_BG_SRC = "/images/mobile/nav/nav-background.jpg";
 
-const Header = () => {
+const MotionLink = motion(Link);
+
+const HeaderSection = () => {
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -48,29 +53,39 @@ const Header = () => {
         className="fixed top-0 right-0 left-0 z-50 flex h-20 items-center justify-between border-b border-[var(--color-border)] bg-white px-4 sm:px-6 md:h-24 md:px-10 lg:px-16"
         style={{ color: "var(--color-fg-strong)" }}
       >
-        <motion.a
-          href="#hero"
+        <motion.div
           className="block w-20 shrink-0 sm:w-24 md:w-32"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.28, duration: 0.4 }}
-          onClick={closeMobileMenu}
         >
-          <img
-            src="/images/logo/et-logo.png"
-            alt="ET Logo"
-            className="h-auto w-full"
-          />
-        </motion.a>
+          {isHome ? (
+            <a href="#hero" className="block" onClick={closeMobileMenu}>
+              <img
+                src="/images/logo/et-logo.png"
+                alt="ET Logo"
+                className="h-auto w-full"
+              />
+            </a>
+          ) : (
+            <Link to="/" className="block" onClick={closeMobileMenu}>
+              <img
+                src="/images/logo/et-logo.png"
+                alt="ET Logo"
+                className="h-auto w-full"
+              />
+            </Link>
+          )}
+        </motion.div>
         <nav
           className="hidden gap-6 type-nav md:flex lg:gap-10"
           aria-label="Primary"
         >
           {navItems.map(({ label, href }, i) => (
-            <motion.a
+            <MotionLink
               key={label}
-              href={href}
-              className="hover-underline group relative text-[var(--color-fg)] block"
+              to={href}
+              className="hover-underline group relative block text-[var(--color-fg)]"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -90,11 +105,11 @@ const Header = () => {
                   {label}
                 </span>
               </span>
-            </motion.a>
+            </MotionLink>
           ))}
         </nav>
-        <motion.a
-          href="#contact"
+        <MotionLink
+          to="/#contact"
           className="group type-button hidden shrink-0 md:inline-flex items-center justify-center rounded-tr-full rounded-br-lg bg-[var(--color-fg-strong)] px-4 py-2 text-[var(--color-fg-inverse)] transition-opacity hover:bg-[var(--color-primary-blue)] hover:opacity-90 sm:px-5 sm:py-2.5 md:px-7 md:py-4"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -111,7 +126,7 @@ const Header = () => {
               Inquiry
             </span>
           </span>
-        </motion.a>
+        </MotionLink>
         <button
           type="button"
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
@@ -167,9 +182,9 @@ const Header = () => {
                 aria-label="Mobile Primary"
               >
                 {navItems.map(({ label, href }, i) => (
-                  <motion.a
+                  <MotionLink
                     key={label}
-                    href={href}
+                    to={href}
                     onClick={closeMobileMenu}
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -183,11 +198,11 @@ const Header = () => {
                     <span className="text-[1.05rem] font-semibold tracking-[0.08em] uppercase">
                       {label}
                     </span>
-                  </motion.a>
+                  </MotionLink>
                 ))}
               </nav>
-              <motion.a
-                href="#contact"
+              <MotionLink
+                to="/#contact"
                 onClick={closeMobileMenu}
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -199,7 +214,7 @@ const Header = () => {
                 className="mt-6 inline-flex w-full items-center justify-center rounded-tr-full rounded-br-lg bg-white/14 px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-[#0f2430]"
               >
                 Inquiry
-              </motion.a>
+              </MotionLink>
             </motion.div>
           </motion.div>
         ) : null}
@@ -208,4 +223,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default HeaderSection;

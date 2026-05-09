@@ -47,7 +47,7 @@ export default function FooterSection() {
               resilient, connected, and moving forward.
             </p>
             <a
-              href="#solutions"
+              href="/#solutions"
               className="mt-7 inline-flex items-center gap-2 border-b border-white/35 pb-1 text-sm font-semibold uppercase tracking-[0.18em] text-white transition-colors duration-300 hover:text-[var(--color-accent)] md:justify-start"
             >
               Start a Project
@@ -78,7 +78,7 @@ export default function FooterSection() {
                   }}
                 >
                   <a
-                    href="#solutions"
+                    href="/#solutions"
                     className="text-base text-white/86 transition-colors duration-300 hover:text-[var(--color-accent)]"
                   >
                     {item}

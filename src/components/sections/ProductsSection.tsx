@@ -26,7 +26,16 @@ function SlideMedia({ slide }: { slide: ProductSlide }) {
   );
 }
 
-export default function ProductsSection() {
+type Props = {
+  /** When false, slides flow in document order (easier to scrub in Learn dashboard). */
+  stickySlides?: boolean;
+};
+
+export default function ProductsSection({ stickySlides = true }: Props) {
+  const slideLayout = stickySlides
+    ? "sticky top-0 h-[100svh]"
+    : "relative min-h-[88svh]";
+
   return (
     <div id="our-products" className="relative isolate">
       {productSlides.map((slide, index) => {
@@ -37,7 +46,7 @@ export default function ProductsSection() {
         return (
           <section
             key={`${slide.title}-${index}`}
-            className="sticky top-0 box-border h-[100svh] overflow-hidden bg-[#062b3a] pb-6 md:pb-10 lg:pb-12"
+            className={`${slideLayout} box-border overflow-hidden bg-[#062b3a] pb-6 md:pb-10 lg:pb-12`}
             style={{ zIndex: 10 + index * 10 }}
           >
             {index === 0 ? (
