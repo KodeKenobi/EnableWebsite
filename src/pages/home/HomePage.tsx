@@ -1,6 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  introProfileLog,
+  introProfileLogNavigationOnce,
+  introProfileMarkHeroRevealReady,
+  isIntroProfiling,
+} from "../../lib/introProfile.ts";
 import IntroLoader from "../../components/loaders/IntroLoader.tsx";
 import HeaderSection from "../../components/sections/HeaderSection.tsx";
 import Hero from "../../components/sections/HeroSection.tsx";
@@ -37,8 +43,22 @@ export default function HomePage() {
   const scrollUnlocked = headerReady;
 
   const handleIntroComplete = useCallback(() => {
+    if (isIntroProfiling()) {
+      introProfileLog("home:introLoaderOnComplete");
+    }
     setHeaderReady(false);
     setIntroDone(true);
+  }, []);
+
+  const handleRevealReady = useCallback(() => {
+    introProfileMarkHeroRevealReady();
+    setHeaderReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isIntroProfiling()) return;
+    introProfileLogNavigationOnce();
+    introProfileLog("home:pageMount");
   }, []);
 
   useEffect(() => {
@@ -101,12 +121,7 @@ export default function HomePage() {
   return (
     <main className="relative min-h-screen w-full bg-[var(--color-bg)]">
       <div className="fixed inset-0 z-0">
-        <Hero
-          introDone={introDone}
-          onRevealReady={() => {
-            setHeaderReady(true);
-          }}
-        />
+        <Hero introDone={introDone} onRevealReady={handleRevealReady} />
       </div>
 
       {scrollUnlocked ? (

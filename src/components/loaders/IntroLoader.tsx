@@ -1,84 +1,49 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import lottie, { type AnimationItem } from "lottie-web";
+import { animate } from "framer-motion/dom";
+import { motion } from "framer-motion";
+import {
+  introProfileLog,
+  isIntroProfiling,
+} from "../../lib/introProfile.ts";
 
 interface IntroLoaderProps {
   onComplete?: () => void;
 }
 
-const LOTTIE_SRC = "/lotties/bot.json";
-const LOTTIE_PLAYBACK_SPEED = 1.45;
+const EASE_OUT = [0.22, 1, 0.36, 1] as const;
 
 const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
+  const [hideOverlay, setHideOverlay] = useState(false);
+  const exitNotifiedRef = useRef(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const lottieWrapRef = useRef<HTMLDivElement>(null);
-  const lottieHostRef = useRef<HTMLDivElement>(null);
-  const animRef = useRef<AnimationItem | null>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const logoImgRef = useRef<HTMLImageElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 
-  const [lottieReady, setLottieReady] = useState(false);
   const [logoReady, setLogoReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const host = lottieHostRef.current;
-    if (!host) return;
-
-    const anim = lottie.loadAnimation({
-      container: host,
-      renderer: "svg",
-      loop: false,
-      autoplay: false,
-      path: LOTTIE_SRC,
-    });
-    animRef.current = anim;
-
-    const markReady = () => {
-      anim.setSpeed(LOTTIE_PLAYBACK_SPEED);
-      setLottieReady(true);
-    };
-
-    const exitIntro = () => {
-      const el = containerRef.current;
-      if (!el) {
-        onCompleteRef.current?.();
-        return;
-      }
-      gsap.to(el, {
-        autoAlpha: 0,
-        duration: 0.32,
-        ease: "power2.inOut",
-        onComplete: () => {
-          onCompleteRef.current?.();
-        },
-      });
-    };
-
-    const onAnimComplete = () => {
-      exitIntro();
-    };
-
-    anim.addEventListener("DOMLoaded", markReady);
-    anim.addEventListener("data_failed", markReady);
-    anim.addEventListener("complete", onAnimComplete);
-
-    return () => {
-      anim.removeEventListener("DOMLoaded", markReady);
-      anim.removeEventListener("data_failed", markReady);
-      anim.removeEventListener("complete", onAnimComplete);
-      anim.destroy();
-      animRef.current = null;
-    };
+    const mq = window.matchMedia("(max-width: 767px)");
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
   }, []);
 
-  /** Do not run the logo scale until the PNG is decoded — otherwise it “pops” mid-tween and feels like a broken load. */
+  useEffect(() => {
+    if (isIntroProfiling()) {
+      introProfileLog("intro:loaderMounted");
+    }
+  }, []);
+
   useLayoutEffect(() => {
     const img = logoImgRef.current;
     if (!img) return;
@@ -110,186 +75,118 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
   }, []);
 
   useEffect(() => {
-    if (!lottieReady || !logoReady) return;
+    if (logoReady && isIntroProfiling()) {
+      introProfileLog("intro:logoDecodedOrReady");
+    }
+  }, [logoReady]);
 
-    let gsapCtx: gsap.Context | null = null;
-    gsapCtx = gsap.context(() => {
+  useEffect(() => {
+    if (!logoReady) return;
+
+    let alive = true;
+
+    const run = async () => {
       const logo = logoRef.current;
       const line = lineRef.current;
       const title = titleRef.current;
       const body = bodyRef.current;
-      const lottieWrap = lottieWrapRef.current;
       const content = contentRef.current;
-      if (!logo || !line || !title || !body || !lottieWrap || !content) return;
+      if (!logo || !line || !title || !body || !content) {
+        if (isIntroProfiling()) {
+          introProfileLog("intro:sequenceSkippedMissingRefs");
+        }
+        return;
+      }
 
-      const mm = gsap.matchMedia();
+      if (isIntroProfiling()) {
+        introProfileLog("intro:motionSequenceStart");
+      }
 
-      /** Desktop: horizontal title reveal + row/line choreography; mobile: vertically stacked centered copy. */
-      const buildTimeline = (isMobile: boolean) => {
-        const tl = gsap.timeline({
-          defaults: { ease: "power2.out", force3D: true },
-        });
+      const mobile = window.matchMedia("(max-width: 767px)").matches;
+      const logoLiftY = mobile ? -184 : -200;
 
-        gsap.set([logo, line, title, body, lottieWrap], {
-          willChange: "transform, opacity",
-        });
-        gsap.set(logo, {
-          autoAlpha: 0,
-          scale: 0.58,
-          y: 0,
-          transformOrigin: "50% 50%",
-        });
-        gsap.set(line, {
-          autoAlpha: 0,
-          scaleY: 0,
-          transformOrigin: isMobile ? "center top" : "center bottom",
-        });
-        gsap.set(title, {
-          autoAlpha: 0,
-          x: isMobile ? 0 : 22,
-          y: isMobile ? 20 : 0,
-        });
-        gsap.set(body, { autoAlpha: 0, y: 18 });
-        gsap.set(lottieWrap, {
-          autoAlpha: 0,
-          scale: 0.98,
-          transformOrigin: "50% 50%",
-        });
+      await animate(
+        logo,
+        { opacity: 1, scale: 1 },
+        { duration: 0.68, ease: EASE_OUT },
+      );
+      if (!alive) return;
 
-        tl.to(logo, {
-          autoAlpha: 1,
-          scale: 1,
-          duration: 0.9,
-          ease: "power3.out",
-        })
-          .to(
-            logo,
-            {
-              y: isMobile ? -184 : -200,
-              duration: isMobile ? 0.56 : 0.5,
-              ease: isMobile ? "power3.inOut" : "power2.inOut",
-            },
-            ">-0.04",
-          )
-          .to(
-            line,
-            {
-              autoAlpha: 1,
-              scaleY: 1,
-              duration: 0.42,
-            },
-            "<0.16",
-          )
-          .to(
-            title,
-            isMobile
-              ? {
-                  autoAlpha: 1,
-                  y: 0,
-                  duration: 0.34,
-                  ease: "power3.out",
-                }
-              : {
-                  autoAlpha: 1,
-                  x: 0,
-                  duration: 0.34,
-                  ease: "power3.out",
-                },
-            "<0.06",
-          )
-          .to(
-            body,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.42,
-              ease: "power1.out",
-            },
-            "<0.04",
-          )
-          .to(
-            content,
-            {
-              autoAlpha: 0,
-              duration: 0.28,
-              ease: "power2.inOut",
-            },
-            ">0.12",
-          )
-          .call(() => {
-            const a = animRef.current;
-            if (!a?.isLoaded) {
-              gsap.delayedCall(0.24, () => {
-                const el = containerRef.current;
-                if (!el) {
-                  onCompleteRef.current?.();
-                  return;
-                }
-                gsap.to(el, {
-                  autoAlpha: 0,
-                  duration: 0.3,
-                  ease: "power2.inOut",
-                  onComplete: () => onCompleteRef.current?.(),
-                });
-              });
-              return;
-            }
-            a.setSpeed(LOTTIE_PLAYBACK_SPEED);
-            a.goToAndStop(0, true);
-            a.play();
-          })
-          .to(
-            lottieWrap,
-            {
-              autoAlpha: 1,
-              scale: 1,
-              duration: 0.34,
-              ease: "power2.out",
-            },
-            "<0.02",
-          );
+      await Promise.all([
+        animate(logo, { y: logoLiftY }, { duration: mobile ? 0.44 : 0.4, ease: EASE_OUT }),
+        animate(
+          line,
+          { opacity: 1, scaleY: 1 },
+          { duration: 0.32, ease: EASE_OUT },
+        ),
+        animate(
+          title,
+          mobile ? { opacity: 1, y: 0 } : { opacity: 1, x: 0 },
+          { duration: 0.28, ease: EASE_OUT },
+        ),
+        animate(body, { opacity: 1, y: 0 }, { duration: 0.32, ease: EASE_OUT }),
+      ]);
+      if (!alive) return;
 
-        return tl;
-      };
+      await animate(content, { opacity: 0 }, { duration: 0.22, ease: EASE_OUT });
+      if (!alive) return;
 
-      mm.add("(min-width: 768px)", () => {
-        const tl = buildTimeline(false);
-        return () => tl.kill();
-      });
-      mm.add("(max-width: 767px)", () => {
-        const tl = buildTimeline(true);
-        return () => tl.kill();
-      });
-    }, containerRef);
+      if (isIntroProfiling()) {
+        introProfileLog("intro:motionSequenceComplete");
+      }
+
+      if (isIntroProfiling()) {
+        introProfileLog("intro:overlayExitStart");
+      }
+      exitNotifiedRef.current = false;
+      setHideOverlay(true);
+    };
+
+    run().catch(() => {
+      if (isIntroProfiling()) {
+        introProfileLog("intro:motionSequenceError");
+      }
+    });
 
     return () => {
-      gsapCtx?.revert();
+      alive = false;
     };
-  }, [lottieReady, logoReady]);
+  }, [logoReady]);
+
+  const handleOverlayAnimationComplete = () => {
+    if (!hideOverlay || exitNotifiedRef.current) return;
+    exitNotifiedRef.current = true;
+    if (isIntroProfiling()) {
+      introProfileLog("intro:overlayExitEnd");
+    }
+    onCompleteRef.current?.();
+  };
 
   return (
-    <div
+    <motion.div
       ref={containerRef}
       className="fixed inset-0 z-[100] overflow-hidden pointer-events-none"
       style={{ background: "var(--color-fg-strong)" }}
+      initial={false}
+      animate={{ opacity: hideOverlay ? 0 : 1 }}
+      transition={{ duration: 0.32, ease: EASE_OUT }}
+      onAnimationComplete={handleOverlayAnimationComplete}
     >
-      <div
-        ref={lottieWrapRef}
-        className="absolute inset-0 z-[5] flex items-center justify-center overflow-hidden px-6 invisible opacity-0"
-      >
-        <div
-          ref={lottieHostRef}
-          className="w-full max-w-[min(92vw,440px)] [&_svg]:h-auto [&_svg]:w-full"
-          aria-hidden
-        />
-      </div>
-
       <div
         ref={contentRef}
         className="absolute inset-0 z-20 flex items-center justify-center"
+        style={{ opacity: 1 }}
       >
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div ref={logoRef} className="invisible w-32 opacity-0 md:w-44">
+          <div
+            ref={logoRef}
+            className="w-32 md:w-44"
+            style={{
+              opacity: 0,
+              transform: "scale(0.58)",
+              transformOrigin: "50% 50%",
+            }}
+          >
             <img
               ref={logoImgRef}
               src="/images/logo/et-logo-white.png"
@@ -308,22 +205,30 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
         >
           <div
             ref={lineRef}
-            className="invisible mt-5 h-20 w-px shrink-0 origin-top scale-y-0 opacity-0 md:mt-4 md:h-auto md:min-h-0 md:w-px md:flex-none md:origin-bottom md:self-stretch"
-            style={{ background: "var(--color-fg-inverse)" }}
+            className="mt-5 h-20 w-px shrink-0 md:mt-4 md:h-auto md:min-h-0 md:w-px md:flex-none md:self-stretch"
+            style={{
+              opacity: 0,
+              transform: "scaleY(0)",
+              transformOrigin: isMobile ? "center top" : "center bottom",
+              background: "var(--color-fg-inverse)",
+            }}
           />
           <div className="relative mt-6 flex min-w-0 max-w-[min(560px,calc(100vw-3rem))] flex-col items-center text-center md:mt-0 md:items-start md:text-left">
             <div
               ref={titleRef}
-              className="type-intro-title invisible w-full opacity-0"
+              className="type-intro-title w-full"
+              style={
+                isMobile
+                  ? { opacity: 0, transform: "translateY(20px)" }
+                  : { opacity: 0, transform: "translateX(22px)" }
+              }
             >
               <span className="whitespace-nowrap">Meet the future</span>
               <br />
               today
             </div>
-            {/* Ref required for GSAP timeline; matches existing body tween (no visible copy). */}
             <div
               ref={bodyRef}
-              className="invisible opacity-0"
               aria-hidden
               style={{
                 position: "absolute",
@@ -331,12 +236,14 @@ const IntroLoader = ({ onComplete }: IntroLoaderProps) => {
                 height: 0,
                 overflow: "hidden",
                 pointerEvents: "none",
+                opacity: 0,
+                transform: "translateY(18px)",
               }}
             />
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

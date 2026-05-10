@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { introProfileLog, isIntroProfiling } from "../../lib/introProfile.ts";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import FloatingLines from "../animations/backgrounds/FloatingLines.tsx";
 import {
@@ -16,22 +17,22 @@ interface HeroProps {
 type HeroRevealPhase = "idle" | "loading" | "playing";
 
 /** Minimum loading beat after intro (or on refresh when intro is skipped). */
-const HERO_LOADING_MS = 720;
+const HERO_LOADING_MS = 420;
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const BG_DURATION = 1.95;
+const BG_DURATION = 1.45;
 
 /** Paragraph-slide duration per layer. */
-const TEXT_SLIDE_DURATION = 1.45;
+const TEXT_SLIDE_DURATION = 1.2;
 
 /** Offset between headline → paragraph → CTAs → scroll (seconds). */
-const COPY_STAGGER = 0.26;
+const COPY_STAGGER = 0.18;
 
 /** Base beat for hero copy once the backdrop has mostly settled (~matches `BG_DURATION`). */
-const HERO_COPY_BASE = 2.15;
+const HERO_COPY_BASE = 1.72;
 
-/** Delays in seconds from the start of the `playing` phase (after loading overlay ends). */
+/** Delays in seconds from the start of the `playing` phase (ornament / backdrop layers). */
 const T = {
   bg: 0,
   noise: 0.2,
@@ -39,10 +40,6 @@ const T = {
   leftBand: 1.42,
   dots: 1.58,
   gradient: 1.38,
-  heroTitle: HERO_COPY_BASE,
-  heroBody: HERO_COPY_BASE + COPY_STAGGER,
-  heroCtas: HERO_COPY_BASE + COPY_STAGGER * 2,
-  heroScroll: HERO_COPY_BASE + COPY_STAGGER * 3,
 } as const;
 
 const NOISE_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
@@ -63,7 +60,7 @@ const noiseVariants = {
   hide: { opacity: 0 },
   show: {
     opacity: 0.06,
-    transition: { duration: 1.35, ease: "easeOut", delay: T.noise },
+    transition: { duration: 1.05, ease: "easeOut", delay: T.noise },
   },
 } as const;
 
@@ -72,7 +69,7 @@ const bandRightVariants = {
   show: {
     opacity: 0.85,
     x: 0,
-    transition: { delay: T.rightBand, duration: 1.45, ease: EASE },
+    transition: { delay: T.rightBand, duration: 1.12, ease: EASE },
   },
 } as const;
 
@@ -81,7 +78,7 @@ const bandLeftVariants = {
   show: {
     opacity: 0.85,
     x: 0,
-    transition: { delay: T.leftBand, duration: 1.45, ease: EASE },
+    transition: { delay: T.leftBand, duration: 1.12, ease: EASE },
   },
 } as const;
 
@@ -92,7 +89,7 @@ const dotsVariants = {
     scale: 1,
     transition: {
       delay: T.dots,
-      duration: 1.35,
+      duration: 1.05,
       ease: [0.25, 0.85, 0.25, 1] as const,
     },
   },
@@ -102,63 +99,24 @@ const bottomGradientVariants = {
   hide: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { duration: 1.25, ease: "easeOut", delay: T.gradient },
+    transition: { duration: 1, ease: "easeOut", delay: T.gradient },
   },
 } as const;
 
 const paragraphEase = paragraphSlideVariants.show.transition.ease;
 
-/** Same slide motion per layer; `delay` staggers headline → body → actions → scroll. */
-const heroTitleSlideVariants = {
+/**
+ * Copy column variants without embedded transitions — delays/durations come only from
+ * the `transition` prop (mobile-aware). Mixing variant + prop transitions caused janky easing.
+ */
+const heroCopySlideVariants = {
   hide: { ...paragraphSlideVariants.hide },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: T.heroTitle,
-      duration: TEXT_SLIDE_DURATION,
-      ease: paragraphEase,
-    },
-  },
+  show: { opacity: 1, y: 0 },
 } as const;
 
-const heroParagraphSlideVariants = {
-  hide: { ...paragraphSlideVariants.hide },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: T.heroBody,
-      duration: TEXT_SLIDE_DURATION,
-      ease: paragraphEase,
-    },
-  },
-} as const;
-
-const heroCtasSlideVariants = {
-  hide: { ...paragraphSlideVariants.hide },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: T.heroCtas,
-      duration: TEXT_SLIDE_DURATION,
-      ease: paragraphEase,
-    },
-  },
-} as const;
-
-const heroScrollVariants = {
+const heroScrollRevealVariants = {
   hide: { opacity: 0, y: paragraphSlideVariants.hide.y },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: T.heroScroll,
-      duration: TEXT_SLIDE_DURATION,
-      ease: paragraphEase,
-    },
-  },
+  show: { opacity: 1, y: 0 },
 } as const;
 
 /** Matches `Header` (`h-24`) so hero ornaments never enter the nav band. */
@@ -231,6 +189,8 @@ function DotBurst({ className }: { className?: string }) {
 const Hero = ({ introDone, onRevealReady }: HeroProps) => {
   const [phase, setPhase] = useState<HeroRevealPhase>("idle");
   const [isMobile, setIsMobile] = useState(false);
+  /** Mount WebGL after the first frames of hero motion so the GPU isn’t compiling shaders mid-tween. */
+  const [webglHeroReady, setWebglHeroReady] = useState(false);
 
   useEffect(() => {
     const query = window.matchMedia("(max-width: 767px)");
@@ -309,9 +269,19 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
   }, []);
 
   useEffect(() => {
+    setWebglHeroReady(false);
+    if (phase !== "playing" || !introDone) return;
+    let t = window.setTimeout(() => setWebglHeroReady(true), 120);
+    return () => window.clearTimeout(t);
+  }, [phase, introDone]);
+
+  useEffect(() => {
     if (!introDone) {
       setPhase("idle");
       return;
+    }
+    if (isIntroProfiling()) {
+      introProfileLog("hero:introDoneReceived");
     }
     setPhase("loading");
     const t = window.setTimeout(() => {
@@ -319,6 +289,24 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
     }, HERO_LOADING_MS);
     return () => window.clearTimeout(t);
   }, [introDone]);
+
+  useEffect(() => {
+    if (!isIntroProfiling()) return;
+    introProfileLog("hero:phase", { phase });
+  }, [phase]);
+
+  useEffect(() => {
+    if (!isIntroProfiling() || phase !== "playing") return;
+    /** Last staggered headline track (approx); useful for throughput timing when waiting past scroll unlock. */
+    const settleMs = Math.round((heroScrollDelay + textDuration) * 1000) + 100;
+    introProfileLog("hero:lastMotionApproxSettleScheduledMs", {
+      settleMs,
+    });
+    const id = window.setTimeout(() => {
+      introProfileLog("hero:lastMotionApproxDone");
+    }, settleMs);
+    return () => window.clearTimeout(id);
+  }, [phase, heroScrollDelay, textDuration]);
 
   useEffect(() => {
     if (phase === "playing") {
@@ -354,17 +342,20 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
         animate={motionPhase}
         variants={bgVariants}
       >
-        <FloatingLines
-          linesGradient={["#ff9346", "#7cff67", "#ffee51", "#5227FF"]}
-          enabledWaves={["middle", "bottom"]}
-          lineCount={[5, 7]}
-          lineDistance={[10, 8]}
-          animationSpeed={0.42}
-          interactive={false}
-          parallax={false}
-          parallaxStrength={0}
-          mixBlendMode="screen"
-        />
+        {/* Mount WebGL after intro + a short beat so Framer’s first paints aren’t competing with shader compile. */}
+        {introDone && phase === "playing" && webglHeroReady ? (
+          <FloatingLines
+            linesGradient={["#ff9346", "#7cff67", "#ffee51", "#5227FF"]}
+            enabledWaves={["middle", "bottom"]}
+            lineCount={[4, 5]}
+            lineDistance={[10, 8]}
+            animationSpeed={0.36}
+            interactive={false}
+            parallax={false}
+            parallaxStrength={0}
+            mixBlendMode="screen"
+          />
+        ) : null}
       </motion.div>
 
       <motion.div
@@ -438,7 +429,6 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
             transform: "scale(var(--hero-text-scale, 1)) translateZ(0)",
             transformOrigin: "left center",
             opacity: "var(--hero-text-opacity, 1)",
-            willChange: "transform, opacity",
           }}
         >
           <h1
@@ -449,7 +439,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
               className="block text-[var(--color-fg-inverse)]"
               initial="hide"
               animate={motionPhase}
-              variants={heroTitleSlideVariants}
+              variants={heroCopySlideVariants}
               transition={{
                 delay: heroTitleDelay,
                 duration: textDuration,
@@ -464,7 +454,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
             className="hero-body max-w-xl text-[var(--color-fg-inverse)] md:mb-10 lg:mt-10"
             initial="hide"
             animate={motionPhase}
-            variants={heroParagraphSlideVariants}
+            variants={heroCopySlideVariants}
             transition={{
               delay: heroBodyDelay,
               duration: textDuration,
@@ -480,7 +470,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
             className="-mt-2 flex flex-row flex-wrap items-center justify-center gap-x-6 gap-y-3 max-md:gap-x-4 sm:-mt-4 md:-mt-5 md:flex-nowrap md:items-center md:justify-start md:gap-x-8"
             initial="hide"
             animate={motionPhase}
-            variants={heroCtasSlideVariants}
+            variants={heroCopySlideVariants}
             transition={{
               delay: heroCtasDelay,
               duration: textDuration,
@@ -517,7 +507,7 @@ const Hero = ({ introDone, onRevealReady }: HeroProps) => {
           className="col-span-12 mt-auto flex justify-center pb-2 md:absolute md:bottom-6 md:left-10 md:col-span-auto md:justify-start lg:bottom-10 lg:left-14"
           initial="hide"
           animate={motionPhase}
-          variants={heroScrollVariants}
+          variants={heroScrollRevealVariants}
           transition={{
             delay: heroScrollDelay,
             duration: textDuration,
